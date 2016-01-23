@@ -1,3 +1,7 @@
+# Project specific
+lib
+test/dist
+
 # Logs
 logs
 *.log

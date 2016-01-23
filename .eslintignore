@@ -1,0 +1,5 @@
+# Compiled by babel
+lib
+
+# Compiled by webpack
+test/dist
