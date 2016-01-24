@@ -20,6 +20,7 @@ const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumbe
  * Executes the given module's src in a fake context in order to get the resulting string.
  *
  * @this LoaderContext
+ * @throws Error
  * @param {string} content the module's src
  */
 function extractLoader(content) {
@@ -57,6 +58,7 @@ function extractLoader(content) {
     Promise.all(dependencies.map(loadModule, this))
         .then((sources) => {
             return sources.map(
+                // runModule may throw an error, so it's important that our promise is rejected in this case
                 (src, i) => runModule(src, dependencies[i], this.options.output.publicPath)
             );
         })
@@ -66,9 +68,7 @@ function extractLoader(content) {
             callback(
                 null,
                 sandbox.module.exports.toString()
-                    .replace(new RegExp(rndPlaceholder, "g"), () => {
-                        return results[i++];
-                    })
+                    .replace(new RegExp(rndPlaceholder, "g"), () => results[i++])
             );
         })
         .catch(callback);
@@ -91,6 +91,7 @@ function loadModule(request) {
  * Executes the given CommonJS module in a fake context to get the exported string. The given module is expected to
  * just return a string without requiring further modules.
  *
+ * @throws Error
  * @param {string} src
  * @param {string} filename
  * @param {string} [publicPath]

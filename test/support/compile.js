@@ -7,6 +7,7 @@ export default function ({ testModule, publicPath }) {
     return new Promise((resolve, reject) => {
         webpack({
             entry: testModulePath,
+            bail: true, // report build errors to our test
             output: {
                 path: path.resolve(__dirname, "../dist"),
                 filename: "bundle.js",

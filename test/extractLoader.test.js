@@ -106,4 +106,12 @@ describe("extractLoader", () => {
             expect(imgHtml).to.have.content.that.match(/<img src="\/test\/hi-dist\.jpg">/);
         });
     });
+    it("should report syntax errors", () => {
+        return compile({ testModule: "error.js" }).then(
+            () => { throw new Error("Did not throw expected error"); },
+            ({ message }) => {
+                expect(message).to.match(/Module build failed: SyntaxError: Unexpected identifier/);
+            }
+        );
+    });
 });
