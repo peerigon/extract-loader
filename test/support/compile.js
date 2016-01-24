@@ -1,7 +1,7 @@
 import webpack from "webpack";
 import path from "path";
 
-export default function (testModule) {
+export default function ({ testModule, publicPath }) {
     const testModulePath = path.resolve(__dirname, "../modules/", testModule);
 
     return new Promise((resolve, reject) => {
@@ -9,7 +9,8 @@ export default function (testModule) {
             entry: testModulePath,
             output: {
                 path: path.resolve(__dirname, "../dist"),
-                filename: "bundle.js"
+                filename: "bundle.js",
+                publicPath
             },
             module: {
                 loaders: [
