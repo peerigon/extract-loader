@@ -1,24 +1,38 @@
-var vm = require("vm");
-var path = require("path");
-var fs = require("fs");
+import vm from "vm";
+import path from "path";
 
-var rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + Math.random().toString().slice(2) + Math.random().toString().slice(2);
+/**
+ * @name LoaderContext
+ * @property {function} async
+ * @property {string} resourcePath
+ * @property {object} options
+ */
 
+/**
+ * Random placeholder. Marks the location in the source code where other modules need to be interpolated.
+ * @type {string}
+ */
+const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
+
+/**
+ * Executes the given module's src and its dependencies in a fake context in order to get the resulting string.
+ *
+ * @this LoaderContext
+ * @param {string} content the module's src
+ */
 function extractLoader(content) {
-    var self = this;
-    var callback = this.async();
-    var dependencies = [];
-    var script = new vm.Script(content, {
+    const callback = this.async();
+    const dependencies = [];
+    const script = new vm.Script(content, {
         filename: this.resourcePath,
         displayErrors: true
     });
-    var sandbox = {
-        require: function (resourcePath) {
+    const sandbox = {
+        require: (resourcePath) => {
             if (/\.js$/.test(resourcePath)) {
-                return require(path.resolve(path.dirname(self.resourcePath), resourcePath));
+                return require(path.resolve(path.dirname(this.resourcePath), resourcePath));
             }
 
-            self.addDependency(resourcePath);   // TODO check if sufficient
             dependencies.push(resourcePath);
 
             return rndPlaceholder;
@@ -26,49 +40,63 @@ function extractLoader(content) {
         module: {},
         exports: {}
     };
-    var result;
 
     sandbox.module.exports = sandbox.exports;
 
     script.runInNewContext(sandbox);
-    result = sandbox.module.exports.toString();
 
     Promise.all(dependencies.map(loadModule, this))
-        .then(function (sources) {
-            return sources.map(function (src, i) {
-                return runModule(src, dependencies[i], self.options.output.publicPath);
-            })
+        .then((sources) => {
+            return sources.map(
+                (src, i) => runModule(src, dependencies[i], this.options.output.publicPath)
+            );
         })
-        .then(function (results) {
-            var i = 0;
+        .then((results) => {
+            let i = 0;
 
-            result = result.replace(new RegExp(rndPlaceholder, "g"), function () {
-                return results[i++];
-            });
-
-            callback(null, result);
+            callback(
+                null,
+                sandbox.module.exports.toString()
+                    .replace(new RegExp(rndPlaceholder, "g"), () => {
+                        return results[i++];
+                    })
+            );
         })
         .catch(callback);
 }
 
+/**
+ * Loads the given module with webpack's internal module loader and returns the source code.
+ *
+ * @this LoaderContext
+ * @param {string} request
+ * @returns {Promise<string>}
+ */
 function loadModule(request) {
-    var context = this;
+    const context = this;
 
-    return new Promise(function (resolve, reject) {
-        context.loadModule(request, function (err, src){
-            err ? reject(err) : resolve(src);
-        });
+    return new Promise((resolve, reject) => {
+        context.loadModule(request, (err, src) => err ? reject(err) : resolve(src));
     });
 }
 
-function runModule(src, filename, publicPath) {
-    var script  = new vm.Script(src, {
-        filename: filename,
+/**
+ * Executes the given CommonJS module in a fake context to get the exported string. The given module is expected to
+ * just return a string without requiring further modules.
+ *
+ * @param {string} src
+ * @param {string} filename
+ * @param {string} [publicPath]
+ * @returns {string}
+ */
+function runModule(src, filename, publicPath = "") {
+    const script = new vm.Script(src, {
+        filename,
         displayErrors: true
     });
-    var sandbox = {
+    const sandbox = {
         module: {},
-        __webpack_public_path__: publicPath || ""
+        __webpack_public_path__: publicPath // eslint-disable-line camelcase
     };
 
     script.runInNewContext(sandbox);
@@ -76,4 +104,13 @@ function runModule(src, filename, publicPath) {
     return sandbox.module.exports.toString();
 }
 
+/**
+ * @returns {string}
+ */
+function rndNumber() {
+    return Math.random().toString().slice(2);
+}
+
+// For CommonJS interoperability
 module.exports = extractLoader;
+export default extractLoader;
