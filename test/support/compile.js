@@ -1,13 +1,8 @@
 import webpack from "webpack";
 import path from "path";
 
-export default function ({ testModule, loaders = [] }) {
+export default function (testModule) {
     const testModulePath = path.resolve(__dirname, "../modules/", testModule);
-
-    loaders.unshift(
-        "file?name=[name].[ext]",
-        path.resolve(__dirname, "../../lib/extractLoader.js")
-    );
 
     return new Promise((resolve, reject) => {
         webpack({
@@ -19,12 +14,34 @@ export default function ({ testModule, loaders = [] }) {
             module: {
                 loaders: [
                     {
-                        test: testModulePath,
-                        loaders
+                        test: /\.js$/,
+                        loaders: [
+                            // appending -dist so we can check if url rewriting is working
+                            "file?name=[name]-dist.[ext]",
+                            path.resolve(__dirname, "../../lib/extractLoader.js")
+                        ]
+                    },
+                    {
+                        test: /\.html$/,
+                        loaders: [
+                            "file?name=[name]-dist.[ext]",
+                            path.resolve(__dirname, "../../lib/extractLoader.js"),
+                            "html?" + JSON.stringify({
+                                attrs: ["img:src", "link:href"]
+                            })
+                        ]
+                    },
+                    {
+                        test: /\.css$/,
+                        loaders: [
+                            "file?name=[name]-dist.[ext]",
+                            path.resolve(__dirname, "../../lib/extractLoader.js"),
+                            "css"
+                        ]
                     },
                     {
                         test: /\.jpg$/,
-                        loader: "file?name=[name].[ext]"
+                        loader: "file?name=[name]-dist.[ext]"
                     }
                 ]
             }
