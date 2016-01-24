@@ -36,7 +36,6 @@
     "eslint": "^1.10.3",
     "eslint-config-peerigon": "^0.1.1",
     "file-loader": "^0.8.5",
-    "hash-file": "^2.1.0",
     "html-loader": "^0.4.0",
     "rimraf": "^2.5.1",
     "webpack": "^1.12.12"
