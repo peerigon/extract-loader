@@ -81,6 +81,21 @@ describe("extractLoader", () => {
             expect(imgCss).to.have.content.that.match(/ url\(hi-dist\.jpg\);/);
         });
     });
+    it("should track all dependencies", () => {
+        return compile({ testModule: "stylesheet.html" }).then((stats) => {
+            const basePath = path.dirname(__dirname); // returns the parent dirname
+            const dependencies = stats.compilation.fileDependencies.map(
+                (dependency) => dependency.slice(basePath.length)
+            );
+
+            expect(dependencies.sort()).to.eql([
+                "/node_modules/css-loader/lib/css-base.js",
+                "/test/modules/hi.jpg",
+                "/test/modules/img.css",
+                "/test/modules/stylesheet.html"
+            ].sort());
+        });
+    });
     it("should extract reference the img with the given publicPath", () => {
         return compile({ testModule: "img.html", publicPath: "/test/" }).then(() => {
             const imgHtml = path.resolve(__dirname, "dist/img-dist.html");

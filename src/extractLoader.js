@@ -4,18 +4,20 @@ import path from "path";
 /**
  * @name LoaderContext
  * @property {function} async
+ * @property {function} addDependency
+ * @property {function} loadModule
  * @property {string} resourcePath
  * @property {object} options
  */
 
 /**
- * Random placeholder. Marks the location in the source code where other modules need to be interpolated.
+ * Random placeholder. Marks the location in the source code where the result of other modules should be inserted.
  * @type {string}
  */
 const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
 
 /**
- * Executes the given module's src and its dependencies in a fake context in order to get the resulting string.
+ * Executes the given module's src in a fake context in order to get the resulting string.
  *
  * @this LoaderContext
  * @param {string} content the module's src
@@ -29,8 +31,15 @@ function extractLoader(content) {
     });
     const sandbox = {
         require: (resourcePath) => {
-            if (/\.js$/.test(resourcePath)) {
-                return require(path.resolve(path.dirname(this.resourcePath), resourcePath));
+            const absPath = path.resolve(path.dirname(this.resourcePath), resourcePath);
+
+            // Mark the file as dependency so webpack's watcher is working
+            this.addDependency(absPath);
+
+            // If the required file is a JS-file, we just evaluate it with node's require
+            // This is necessary because of the css-loader which uses a helper module (css-base.js) to export stuff
+            if (/\.js$/i.test(resourcePath)) {
+                return require(absPath);
             }
 
             dependencies.push(resourcePath);
@@ -73,10 +82,8 @@ function extractLoader(content) {
  * @returns {Promise<string>}
  */
 function loadModule(request) {
-    const context = this;
-
     return new Promise((resolve, reject) => {
-        context.loadModule(request, (err, src) => err ? reject(err) : resolve(src));
+        this.loadModule(request, (err, src) => err ? reject(err) : resolve(src));
     });
 }
 
