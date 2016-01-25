@@ -8,7 +8,8 @@
     "pretest": "npm run build",
     "test": "mocha -R spec --compilers js:babel-register",
     "posttest": "eslint src test",
-    "coverage": "babel-node ./node_modules/istanbul/lib/cli cover _mocha"
+    "coverage": "babel-node ./node_modules/istanbul/lib/cli cover _mocha",
+    "prepublish": "npm test"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,7 @@
     "html",
     "css"
   ],
-  "author": "peerigon",
+  "author": "peerigon <developers@peerigon.com>",
   "license": "Unlicense",
   "bugs": {
     "url": "https://github.com/peerigon/extract-loader/issues"
