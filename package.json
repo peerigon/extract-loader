@@ -41,6 +41,7 @@
     "istanbul": "^0.4.2",
     "mocha": "^2.3.4",
     "rimraf": "^2.5.1",
+    "style-loader": "^0.13.0",
     "webpack": "^1.12.12"
   }
 }

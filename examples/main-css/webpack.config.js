@@ -1,25 +1,24 @@
 var path = require("path");
 
+var live = process.env.NODE_ENV === "production";
+var mainCss = ["css", path.join(__dirname, "app", "main.css")];
+
+if (live) {
+    mainCss.unshift(
+        "file?name=[name].[ext]",
+        path.resolve(__dirname, "../../lib/extractLoader.js") // should be just "extract" in your case
+    );
+} else {
+    mainCss.unshift("style");
+}
+
 module.exports = {
     entry: [
-        path.join(__dirname, "app", "main.css"),
-        path.join(__dirname, "app", "main.js")
+        path.join(__dirname, "app", "main.js"),
+        mainCss.join("!")
     ],
     output: {
         path: path.join(__dirname, "dist"),
         filename: "bundle.js"
-    },
-    module: {
-        loaders: [
-            {
-                test: /\.css$/,
-                loaders: [
-                    "file?name=[name].[ext]",
-                    // should be just "extract" in your case
-                    path.resolve(__dirname, "../../lib/extractLoader.js"),
-                    "css"
-                ]
-            }
-        ]
     }
 };
