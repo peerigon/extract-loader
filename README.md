@@ -5,7 +5,7 @@ extract-loader
 [![](https://img.shields.io/npm/v/extract-loader.svg)](https://www.npmjs.com/package/extract-loader)
 [![](https://img.shields.io/npm/dm/extract-loader.svg)](https://www.npmjs.com/package/extract-loader)
 [![Build Status](https://travis-ci.org/peerigon/extract-loader.svg?branch=master)](https://travis-ci.org/peerigon/extract-loader)
-[![Dependency Status](https://david-dm.org/peerigon/extract-loader.svg)](https://david-dm.org/peerigon/phridge)
+[![Dependency Status](https://david-dm.org/peerigon/extract-loader.svg)](https://david-dm.org/peerigon/extract-loader)
 [![Coverage Status](https://img.shields.io/coveralls/peerigon/extract-loader.svg)](https://coveralls.io/r/peerigon/extract-loader?branch=master)
 
 The extract-loader evaluates the given source code on the fly and returns the result as string. Its main use-case is to resolve urls within HTML and CSS coming from their respective loaders. Use the [file-loader](https://github.com/webpack/file-loader) to emit the extract-loader's result as separate file.
