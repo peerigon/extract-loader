@@ -1,7 +1,10 @@
 var path = require("path");
 
 module.exports = {
-    entry: path.join(__dirname, "main.css"),
+    entry: [
+        path.join(__dirname, "app", "main.css"),
+        path.join(__dirname, "app", "main.js")
+    ],
     output: {
         path: path.join(__dirname, "dist"),
         filename: "bundle.js"
@@ -11,7 +14,7 @@ module.exports = {
             {
                 test: /\.css$/,
                 loaders: [
-                    "file",
+                    "file?name=[name].[ext]",
                     // should be just "extract" in your case
                     path.resolve(__dirname, "../../lib/extractLoader.js"),
                     "css"
