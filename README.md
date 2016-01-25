@@ -58,17 +58,6 @@ module.exports = {
 
 You can even add your `index.html` as `entry` and just reference your stylesheets from there. You just need to tell the html-loader to also pick up `link:href`: 
 
-```html
-<html>
-<head>
-    <link href="main.css" type="text/css" rel="stylesheet">
-</head>
-<body>
-    <img src="hi.jpg">
-</body>
-</html>
-```
-
 ```javascript
 var indexHtml = path.join(__dirname, "app", "index.html");
 
@@ -107,7 +96,21 @@ module.exports = {
 };
 ```
 
-yields to
+turns
+
+```html
+<html>
+<head>
+    <link href="main.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+    <img src="hi.jpg">
+</body>
+</html>
+```
+
+into
+
 
 ```html
 <html>
