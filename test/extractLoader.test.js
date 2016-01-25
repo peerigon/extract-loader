@@ -96,7 +96,7 @@ describe("extractLoader", () => {
             ].sort());
         });
     });
-    it("should extract reference the img with the given publicPath", () => {
+    it("should reference the img with the given publicPath", () => {
         return compile({ testModule: "img.html", publicPath: "/test/" }).then(() => {
             const imgHtml = path.resolve(__dirname, "dist/img-dist.html");
             const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
