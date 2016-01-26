@@ -110,7 +110,7 @@ describe("extractLoader", () => {
         return compile({ testModule: "error.js" }).then(
             () => { throw new Error("Did not throw expected error"); },
             ({ message }) => {
-                expect(message).to.match(/Module build failed: SyntaxError: Unexpected identifier/);
+                expect(message).to.match(/SyntaxError: Unexpected identifier/);
             }
         );
     });
