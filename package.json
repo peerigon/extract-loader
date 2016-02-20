@@ -1,6 +1,6 @@
 {
   "name": "extract-loader",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "webpack loader to extract HTML and CSS from the bundle",
   "main": "lib/extractLoader.js",
   "scripts": {
