@@ -3,6 +3,7 @@ import path from "path";
 
 /**
  * @name LoaderContext
+ * @property {function} cacheable
  * @property {function} async
  * @property {function} addDependency
  * @property {function} loadModule
@@ -51,8 +52,9 @@ function extractLoader(content) {
         exports: {}
     };
 
-    sandbox.module.exports = sandbox.exports;
+    this.cacheable();
 
+    sandbox.module.exports = sandbox.exports;
     script.runInNewContext(sandbox);
 
     Promise.all(dependencies.map(loadModule, this))

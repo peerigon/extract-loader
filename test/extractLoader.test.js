@@ -4,6 +4,8 @@ import rimRaf from "rimraf";
 import chai, { expect } from "chai";
 import chaiFs from "chai-fs";
 import compile from "./support/compile";
+import extractLoader from "../src/extractLoader";
+
 import "./support/unhandledRejection";
 
 chai.use(chaiFs);
@@ -115,4 +117,20 @@ describe("extractLoader", () => {
             }
         )
     );
+    it("should flag itself as cacheable", (done) => {
+        const loaderContext = {
+            async() {
+                return () => {
+                    expect(cacheableCalled).to.equal(true, "cacheable() has not been called");
+                    done();
+                };
+            },
+            cacheable() {
+                cacheableCalled = true;
+            }
+        };
+        let cacheableCalled = false;
+
+        extractLoader.call(loaderContext, "");
+    });
 });
