@@ -4,6 +4,7 @@ import rimRaf from "rimraf";
 import chai, { expect } from "chai";
 import chaiFs from "chai-fs";
 import compile from "./support/compile";
+import "./support/unhandledRejection";
 
 chai.use(chaiFs);
 
