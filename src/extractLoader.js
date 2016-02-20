@@ -56,21 +56,14 @@ function extractLoader(content) {
     script.runInNewContext(sandbox);
 
     Promise.all(dependencies.map(loadModule, this))
-        .then((sources) => {
-            return sources.map(
-                // runModule may throw an error, so it's important that our promise is rejected in this case
-                (src, i) => runModule(src, dependencies[i], this.options.output.publicPath)
-            );
-        })
-        .then((results) => {
-            let i = 0;
-
-            callback(
-                null,
-                sandbox.module.exports.toString()
-                    .replace(new RegExp(rndPlaceholder, "g"), () => results[i++])
-            );
-        })
+        .then(sources => sources.map(
+            // runModule may throw an error, so it's important that our promise is rejected in this case
+            (src, i) => runModule(src, dependencies[i], this.options.output.publicPath)
+        ))
+        .then(results => sandbox.module.exports.toString()
+            .replace(new RegExp(rndPlaceholder, "g"), () => results.shift())
+        )
+        .then(content => callback(null, content))
         .catch(callback);
 }
 
