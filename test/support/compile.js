@@ -37,7 +37,9 @@ export default function ({ testModule, publicPath }) {
                         test: /\.css$/,
                         loaders: [
                             "file?name=[name]-dist.[ext]",
-                            path.resolve(__dirname, "../../lib/extractLoader.js"),
+                            path.resolve(__dirname, "../../lib/extractLoader.js") + '?' + JSON.stringify({
+                                resolve: '\\.js$'
+                            }),
                             "css"
                         ]
                     },
