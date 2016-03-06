@@ -16,6 +16,12 @@ export default function ({ testModule, publicPath }) {
             module: {
                 loaders: [
                     {
+                        test: /\.entry\.js$/,
+                        loaders: [
+                            "file?name=[name]-dist.[ext]"
+                        ]
+                    },
+                    {
                         test: /\.js$/,
                         loaders: [
                             // appending -dist so we can check if url rewriting is working
@@ -27,9 +33,13 @@ export default function ({ testModule, publicPath }) {
                         test: /\.html$/,
                         loaders: [
                             "file?name=[name]-dist.[ext]",
-                            path.resolve(__dirname, "../../lib/extractLoader.js"),
+                            path.resolve(__dirname, "../../lib/extractLoader.js") + '?' + JSON.stringify({
+                                // nonsense that should never match, ensures that merely the existence of regex
+                                // is not enough to cause the usage of Node's native `require()`
+                                resolve: '$^foobar^$'
+                            }),
                             "html?" + JSON.stringify({
-                                attrs: ["img:src", "link:href"]
+                                attrs: ["img:src", "link:href", "script:src"]
                             })
                         ]
                     },
@@ -37,7 +47,9 @@ export default function ({ testModule, publicPath }) {
                         test: /\.css$/,
                         loaders: [
                             "file?name=[name]-dist.[ext]",
-                            path.resolve(__dirname, "../../lib/extractLoader.js"),
+                            path.resolve(__dirname, "../../lib/extractLoader.js") + '?' + JSON.stringify({
+                                resolve: '\\.js$'
+                            }),
                             "css"
                         ]
                     },
