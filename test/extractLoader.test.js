@@ -84,6 +84,16 @@ describe("extractLoader", () => {
             expect(imgCss).to.have.content.that.match(/ url\(hi-dist\.jpg\);/);
         })
     );
+    it("should extract the referenced main.entry.js without using Node's native require()", () =>
+        compile({ testModule: "noNativeRequire.html" }).then(() => {
+            const noNativeRequireHtml = path.resolve(__dirname, "dist/noNativeRequire-dist.html");
+            const mainEntryJs = path.resolve(__dirname, "dist/main.entry-dist.js");
+
+            expect(noNativeRequireHtml).to.be.a.file();
+            expect(mainEntryJs).to.be.a.file();
+            expect(noNativeRequireHtml).to.have.content.that.match(/<script src="main\.entry-dist\.js"><\/script>/);
+        })
+    )
     it("should track all dependencies", () =>
         compile({ testModule: "stylesheet.html" }).then((stats) => {
             const basePath = path.dirname(__dirname); // returns the parent dirname
