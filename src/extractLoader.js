@@ -1,5 +1,6 @@
 import vm from "vm";
 import path from "path";
+import { parseQuery } from "loader-utils";
 
 /**
  * @name LoaderContext
@@ -9,6 +10,7 @@ import path from "path";
  * @property {function} loadModule
  * @property {string} resourcePath
  * @property {object} options
+ * @property {object} query
  */
 
 /**
@@ -31,6 +33,11 @@ function extractLoader(content) {
         filename: this.resourcePath,
         displayErrors: true
     });
+    const { resolve: resolveQuery } = parseQuery(this.query);
+    let nodeRequireRegex;
+    if (resolveQuery) {
+        nodeRequireRegex = new RegExp(resolveQuery, 'i');
+    }
     const sandbox = {
         require: (resourcePath) => {
             const absPath = path.resolve(path.dirname(this.resourcePath), resourcePath);
@@ -38,9 +45,8 @@ function extractLoader(content) {
             // Mark the file as dependency so webpack's watcher is working
             this.addDependency(absPath);
 
-            // If the required file is a JS-file, we just evaluate it with node's require
-            // This is necessary because of the css-loader which uses a helper module (css-base.js) to export stuff
-            if (/\.js$/i.test(resourcePath)) {
+            // If the required file matches the query, we just evaluate it with node's require
+            if (nodeRequireRegex && nodeRequireRegex.test(resourcePath)) {
                 return require(absPath);
             }
 
