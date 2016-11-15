@@ -109,6 +109,16 @@ describe("extractLoader", () => {
             expect(imgHtml).to.have.content.that.match(/<img src="\/test\/hi-dist\.jpg">/);
         })
     );
+    it("should override the configured publicPath with the publicPath query option", () =>
+        compile({ testModule: "img.html", publicPath: "/test/", query: "?publicPath=/other/" }).then(() => {
+            const imgHtml = path.resolve(__dirname, "dist/img-dist.html");
+            const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
+
+            expect(imgHtml).to.be.a.file();
+            expect(imgJpg).to.be.a.file();
+            expect(imgHtml).to.have.content.that.match(/<img src="\/other\/hi-dist\.jpg">/);
+        })
+    );
     it("should report syntax errors", () =>
         compile({ testModule: "error.js" }).then(
             () => { throw new Error("Did not throw expected error"); },
@@ -127,7 +137,8 @@ describe("extractLoader", () => {
             },
             cacheable() {
                 cacheableCalled = true;
-            }
+            },
+            options: { output: {} }
         };
         let cacheableCalled = false;
 
