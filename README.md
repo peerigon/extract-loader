@@ -129,7 +129,7 @@ Options
 ------------------------------------------------------------------------
 
 There is currently exactly one option: `publicPath`.
-If you are using a relative `publicPath` in webpack's [output options]() and extracting to a file with the `file-loader`, you might need this to account for the location of your extracted file.
+If you are using a relative `publicPath` in webpack's [output options](http://webpack.github.io/docs/configuration.html#output-publicpath) and extracting to a file with the `file-loader`, you might need this to account for the location of your extracted file.
 
 Example:
 ```js
