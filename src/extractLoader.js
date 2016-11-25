@@ -1,5 +1,6 @@
 import vm from "vm";
 import path from "path";
+import { parseQuery } from "loader-utils";
 
 /**
  * @name LoaderContext
@@ -26,6 +27,8 @@ const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumbe
  */
 function extractLoader(content) {
     const callback = this.async();
+    const query = parseQuery(this.query);
+    const publicPath = typeof query.publicPath !== "undefined" ? query.publicPath : this.options.output.publicPath;
     const dependencies = [];
     const script = new vm.Script(content, {
         filename: this.resourcePath,
@@ -60,7 +63,7 @@ function extractLoader(content) {
     Promise.all(dependencies.map(loadModule, this))
         .then(sources => sources.map(
             // runModule may throw an error, so it's important that our promise is rejected in this case
-            (src, i) => runModule(src, dependencies[i], this.options.output.publicPath)
+            (src, i) => runModule(src, dependencies[i], publicPath)
         ))
         .then(results => sandbox.module.exports.toString()
             .replace(new RegExp(rndPlaceholder, "g"), () => results.shift())

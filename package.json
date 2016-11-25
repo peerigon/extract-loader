@@ -44,5 +44,8 @@
     "rimraf": "^2.5.1",
     "style-loader": "^0.13.0",
     "webpack": "^1.12.13"
+  },
+  "dependencies": {
+    "loader-utils": "^0.2.16"
   }
 }

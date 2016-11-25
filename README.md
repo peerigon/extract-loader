@@ -128,8 +128,34 @@ into
 Options
 ------------------------------------------------------------------------
 
-The are currently no options.<br>
-You need one? Then you should think about:
+There is currently exactly one option: `publicPath`.
+If you are using a relative `publicPath` in webpack's [output options](http://webpack.github.io/docs/configuration.html#output-publicpath) and extracting to a file with the `file-loader`, you might need this to account for the location of your extracted file.
+
+Example:
+```js
+module.exports = {
+    output: {
+        path: path.resolve( './dist' ),
+        publicPath: 'dist/'
+    },
+    module: {
+        loaders: [
+            {
+                test: /\.css$/,
+                loaders: [
+                    // target file: dist/assets/file.css
+                    "file?name=assets/[name].[ext]",
+                    // back up one directory to reach "dist/"
+                    "extract?publicPath=../",
+                    "css"
+                ]
+            }
+        ]
+    }
+};
+```
+
+You need another option? Then you should think about:
 
 <br>
 
