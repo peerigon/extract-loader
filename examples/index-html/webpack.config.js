@@ -17,7 +17,7 @@ module.exports = {
                 test: indexHtml,
                 loaders: [
                     "file-loader?name=[name].[ext]",
-                    path.resolve(__dirname, "../../lib/extractLoader.js"),
+                    path.resolve(__dirname, "../../src/extractLoader.js"),
                     "html-loader?" + JSON.stringify({
                         attrs: ["img:src", "link:href"]
                     })
@@ -27,7 +27,7 @@ module.exports = {
                 test: /\.css$/,
                 loaders: [
                     "file-loader",
-                    path.resolve(__dirname, "../../lib/extractLoader.js"),
+                    path.resolve(__dirname, "../../src/extractLoader.js"),
                     "css-loader"
                 ]
             },
