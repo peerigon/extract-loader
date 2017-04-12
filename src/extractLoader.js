@@ -1,6 +1,6 @@
 import vm from "vm";
 import path from "path";
-import { parseQuery } from "loader-utils";
+import { getOptions } from "loader-utils";
 
 /**
  * @name LoaderContext
@@ -27,8 +27,8 @@ const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumbe
  */
 function extractLoader(content) {
     const callback = this.async();
-    const query = parseQuery(this.query);
-    const publicPath = typeof query.publicPath !== "undefined" ? query.publicPath : this.options.output.publicPath;
+    const options = getOptions(this) || {};
+    const publicPath = typeof options.publicPath !== "undefined" ? options.publicPath : this.options.output.publicPath;
     const dependencies = [];
     const script = new vm.Script(content, {
         filename: this.resourcePath,
