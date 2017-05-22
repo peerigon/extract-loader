@@ -119,6 +119,15 @@ describe("extractLoader", () => {
             expect(imgHtml).to.have.content.that.match(/<img src="\/other\/hi-dist\.jpg">/);
         })
     );
+    it("should support explicit loader chains", () => {
+        return compile({ testModule: "loader.html" }).then(() => {
+            const loaderHtml = path.resolve(__dirname, "dist/loader-dist.html");
+            const errJs = path.resolve(__dirname, "dist/err.js");
+
+            expect(loaderHtml).to.be.a.file();
+            expect(errJs).to.have.content("this is a syntax error\n");
+        });
+    });
     it("should report syntax errors", () =>
         compile({ testModule: "error.js" }).then(
             () => { throw new Error("Did not throw expected error"); },
