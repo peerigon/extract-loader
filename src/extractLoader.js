@@ -43,7 +43,7 @@ function extractLoader(content) {
 
             // If the required file is a JS-file, we just evaluate it with node's require
             // This is necessary because of the css-loader which uses a helper module (css-base.js) to export stuff
-            if (/\.js$/i.test(resourcePath)) {
+            if (/css-base\.js$/i.test(resourcePath)) {
                 return require(absPath);
             }
 
