@@ -36,7 +36,7 @@ function extractLoader(content) {
     });
     const sandbox = {
         require: (resourcePath) => {
-            const absPath = path.resolve(path.dirname(this.resourcePath), resourcePath);
+            const absPath = path.resolve(path.dirname(this.resourcePath), resourcePath).split("?")[0];
 
             // Mark the file as dependency so webpack's watcher is working
             this.addDependency(absPath);
