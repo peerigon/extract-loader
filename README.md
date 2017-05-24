@@ -68,29 +68,50 @@ module.exports = {
     ],
     ...
     module: {
-        loaders: [
+        rules: [
             {
                 test: indexHtml,
-                loaders: [
-                    "file-loader?name=[name].[ext]",
-                    "extract-loader",
-                    "html-loader?" + JSON.stringify({
-                        attrs: ["img:src", "link:href"]
-                    })
-                ]
+                use: [
+                    {
+                        loader: "file-loader",
+                        options: {
+                            name: "[name]-dist.[ext]",
+                        },
+                    },
+                    {
+                        loader: "extract-loader",
+                    },
+                    {
+                        loader: "html-loader",
+                        options: {
+                            attrs: ["img:src", "link:href"],
+                            interpolate: true,
+                        },
+                    },
+                ],
             },
             {
                 test: /\.css$/,
                 loaders: [
-                    "file-loader",
-                    "extract-loader",
-                    "css-loader"
-                ]
+                    {
+                        loader: "file-loader",
+                    },
+                    {
+                        loader: "extract-loader",
+                    },
+                    {
+                        loader: "css-loader",
+                    },
+                ],
             },
             {
                 test: /\.jpg$/,
-                loader: "file-loader"
-            }
+                loaders: [
+                    {
+                        loader: "file-loader"
+                    },
+                ],
+            },
         ]
     }
 };
@@ -140,16 +161,26 @@ module.exports = {
         publicPath: "dist/"
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.css$/,
-                loaders: [
-                    // target file: dist/assets/file.css
-                    "file-loader?name=assets/[name].[ext]",
-                    // back up one directory to reach "dist/"
-                    "extract-loader?publicPath=../",
-                    "css-loader"
-                ]
+                use: [
+                    {
+                        loader: "file-loader",
+                        options: {
+                            name: "assets/[name].[ext]"",
+                        },
+                    },
+                    {
+                        loader: "extract-loader",
+                        options: {
+                            publicPath: "../",
+                        }
+                    },
+                    {
+                        loader: "css-loader",
+                    },
+                ],
             }
         ]
     }
