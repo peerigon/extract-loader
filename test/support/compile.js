@@ -29,7 +29,8 @@ export default function ({ testModule, publicPath, query = "" }) {
                             "file?name=[name]-dist.[ext]",
                             path.resolve(__dirname, "../../lib/extractLoader.js") + query,
                             "html?" + JSON.stringify({
-                                attrs: ["img:src", "link:href"]
+                                attrs: ["img:src", "link:href"],
+                                interpolate: true
                             })
                         ]
                     },
