@@ -9,6 +9,7 @@
     "test": "mocha -R spec --compilers js:babel-register",
     "posttest": "eslint src test",
     "coverage": "babel-node ./node_modules/istanbul/lib/cli cover _mocha",
+    "release": "standard-version",
     "prepublish": "npm test"
   },
   "repository": {
