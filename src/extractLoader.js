@@ -16,36 +16,38 @@ import { getOptions } from "loader-utils";
  * Random placeholder. Marks the location in the source code where the result of other modules should be inserted.
  * @type {string}
  */
-const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
+const rndPlaceholder =
+    "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
 
 /**
  * Executes the given module's src in a fake context in order to get the resulting string.
  *
  * @this LoaderContext
  * @throws Error
- * @param {string} content the module's src
+ * @param {string} content - the module's src
  */
 function extractLoader(content) {
     const callback = this.async();
     const options = getOptions(this) || {};
-    const publicPath = typeof options.publicPath !== "undefined" ? options.publicPath : this.options.output.publicPath;
+    const publicPath = options.publicPath === undefined ? this.options.output.publicPath : options.publicPath;
     const dependencies = [];
     const script = new vm.Script(content, {
         filename: this.resourcePath,
-        displayErrors: true
+        displayErrors: true,
     });
     const sandbox = {
-        require: (resourcePath) => {
-            const absPath = path.resolve(path.dirname(this.resourcePath), resourcePath).split("?")[0];
+        require: resourcePath => {
+            const absPath = path
+                .resolve(path.dirname(this.resourcePath), resourcePath)
+                .split("?")[0];
 
             // Mark the file as dependency so webpack's watcher is working
             this.addDependency(absPath);
 
-            // If the required file is a JS-file, we just evaluate it with node's require
-            // This is necessary because of the css-loader which uses a helper module (css-base.js) to export stuff.
+            // If the required file is the css-loader helper, we just require it with node's require.
             // If the required file should be processed by a loader we do not touch it (even if it is a .js file).
             if (/^[^!]*css-base\.js$/i.test(resourcePath)) {
-                return require(absPath);
+                return require(absPath); // eslint-disable-line import/no-dynamic-require
             }
 
             dependencies.push(resourcePath);
@@ -53,7 +55,7 @@ function extractLoader(content) {
             return rndPlaceholder;
         },
         module: {},
-        exports: {}
+        exports: {},
     };
 
     this.cacheable();
@@ -62,12 +64,16 @@ function extractLoader(content) {
     script.runInNewContext(sandbox);
 
     Promise.all(dependencies.map(loadModule, this))
-        .then(sources => sources.map(
-            // runModule may throw an error, so it's important that our promise is rejected in this case
-            (src, i) => runModule(src, dependencies[i], publicPath)
-        ))
-        .then(results => sandbox.module.exports.toString()
-            .replace(new RegExp(rndPlaceholder, "g"), () => results.shift())
+        .then(sources =>
+            sources.map(
+                // runModule may throw an error, so it's important that our promise is rejected in this case
+                (src, i) => runModule(src, dependencies[i], publicPath)
+            )
+        )
+        .then(results =>
+            sandbox.module.exports
+                .toString()
+                .replace(new RegExp(rndPlaceholder, "g"), () => results.shift())
         )
         .then(content => callback(null, content))
         .catch(callback);
@@ -82,7 +88,10 @@ function extractLoader(content) {
  */
 function loadModule(request) {
     return new Promise((resolve, reject) => {
-        this.loadModule(request, (err, src) => err ? reject(err) : resolve(src));
+        this.loadModule(
+            request,
+            (err, src) => (err ? reject(err) : resolve(src))
+        );
     });
 }
 
@@ -99,11 +108,11 @@ function loadModule(request) {
 function runModule(src, filename, publicPath = "") {
     const script = new vm.Script(src, {
         filename,
-        displayErrors: true
+        displayErrors: true,
     });
     const sandbox = {
         module: {},
-        __webpack_public_path__: publicPath // eslint-disable-line camelcase
+        __webpack_public_path__: publicPath, // eslint-disable-line camelcase
     };
 
     script.runInNewContext(sandbox);
@@ -115,7 +124,9 @@ function runModule(src, filename, publicPath = "") {
  * @returns {string}
  */
 function rndNumber() {
-    return Math.random().toString().slice(2);
+    return Math.random()
+        .toString()
+        .slice(2);
 }
 
 // For CommonJS interoperability
