@@ -40,7 +40,7 @@ const live = process.env.NODE_ENV === "production";
 const mainCss = ["css-loader", path.join(__dirname, "app", "main.css")];
 
 if (live) {
-    mainCss.unshift("file-loader?name=[name].[ext]", "extract");
+    mainCss.unshift("file-loader?name=[name].[ext]", "extract-loader");
 } else {
     mainCss.unshift("style-loader");
 }
