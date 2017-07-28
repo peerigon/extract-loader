@@ -106,6 +106,13 @@ function loadModule(request) {
  * @returns {string}
  */
 function runModule(src, filename, publicPath = "") {
+    // Rudimentary "transpilation" of ES 2015 modules (e.g file-loader 1.0.0+)
+    // TODO: Find a better way to "execute" ES 2015 modules in node context
+    // "Transpile" imports
+    src = src.replace(/^import\s+(.+)\s+from\s+([^;]+);?$/, "var $1 = require($2);");
+    // "Transpile" default export (other exports are not supported at the moment)
+    src = src.replace(/^\s*export\s+default\s*/, "module.exports = ");
+
     const script = new vm.Script(src, {
         filename,
         displayErrors: true,
