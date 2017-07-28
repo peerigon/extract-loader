@@ -6,7 +6,7 @@ var mainCss = ["css-loader", path.join(__dirname, "app", "main.css")];
 if (live) {
     mainCss.unshift(
         "file-loader?name=[name].[ext]",
-        path.resolve(__dirname, "../../lib/extractLoader.js") // should be just "extract" in your case
+        path.resolve(__dirname, "..", "..", "lib", "extractLoader.js") // should be just "extract" in your case
     );
 } else {
     mainCss.unshift("style-loader");
