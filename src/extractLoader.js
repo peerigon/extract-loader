@@ -41,12 +41,13 @@ function extractLoader(content) {
                 .resolve(path.dirname(this.resourcePath), resourcePath)
                 .split("?")[0];
 
-            // Mark the file as dependency so webpack's watcher is working
-            this.addDependency(absPath);
-
             // If the required file is the css-loader helper, we just require it with node's require.
             // If the required file should be processed by a loader we do not touch it (even if it is a .js file).
             if (/^[^!]*css-base\.js$/i.test(resourcePath)) {
+                // Mark the file as dependency so webpack's watcher is working for css-base.js. Other dependencies
+                // are automatically added by loadModule() below
+                this.addDependency(absPath);
+
                 return require(absPath); // eslint-disable-line import/no-dynamic-require
             }
 
@@ -88,6 +89,7 @@ function extractLoader(content) {
  */
 function loadModule(request) {
     return new Promise((resolve, reject) => {
+        // LoaderContext.loadModule automatically calls LoaderContext.addDependency for all requested modules
         this.loadModule(
             request,
             (err, src) => (err ? reject(err) : resolve(src))
