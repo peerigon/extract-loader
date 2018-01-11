@@ -1,3 +1,18 @@
 {
-    "presets": ["es2015"]
+    "presets": [
+        [
+            "env",
+            {
+                "targets": {
+                    "node": 4
+                }
+            }
+        ]
+    ],
+    "sourceMaps": true,
+    "env": {
+        "test": {
+            "plugins": ["istanbul"]
+        }
+    }
 }

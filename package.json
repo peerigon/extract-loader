@@ -4,13 +4,11 @@
   "description": "webpack loader to extract HTML and CSS from the bundle",
   "main": "lib/extractLoader.js",
   "scripts": {
-    "build": "babel src -d lib --source-maps",
-    "pretest": "npm run build",
-    "test": "mocha -R spec --compilers js:babel-register",
+    "build": "babel src -d lib",
+    "test": "cross-env NODE_ENV=test nyc mocha -R spec",
     "posttest": "eslint src test",
-    "coverage": "babel-node ./node_modules/istanbul/lib/cli cover _mocha",
     "release": "standard-version",
-    "prepublish": "npm test"
+    "prepublishOnly": "npm test"
   },
   "repository": {
     "type": "git",
@@ -29,26 +27,30 @@
     "url": "https://github.com/peerigon/extract-loader/issues"
   },
   "homepage": "https://github.com/peerigon/extract-loader#readme",
+  "engines": {
+    "node": ">= 4.0.0"
+  },
   "devDependencies": {
-    "babel-cli": "^6.5.1",
-    "babel-preset-es2015": "^6.3.13",
-    "babel-register": "^6.4.3",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-istanbul": "^4.1.5",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
     "chai": "^4.1.0",
-    "chai-fs": "^1.0.0",
-    "css-loader": "^0.28.2",
-    "eslint": "^3.19.0",
-    "eslint-config-peerigon": "^10.1.1",
-    "eslint-plugin-flowtype": "^2.33.0",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jsdoc": "^3.1.0",
-    "file-loader": "^0.11.1",
+    "chai-fs": "^2.0.0",
+    "cross-env": "^5.1.3",
+    "css-loader": "^0.28.8",
+    "eslint": "^4.15.0",
+    "eslint-config-peerigon": "^12.0.1",
+    "eslint-plugin-flowtype": "^2.41.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsdoc": "^3.3.1",
+    "file-loader": "^1.1.6",
     "html-loader": "^0.5.0",
-    "istanbul": "^0.4.2",
-    "mocha": "^3.4.1",
-    "rimraf": "^2.5.1",
-    "standard-version": "^4.3.0",
-    "style-loader": "^0.18.1",
-    "webpack": "^2.6.0"
+    "mocha": "^4.1.0",
+    "nyc": "^11.4.1",
+    "rimraf": "^2.6.2",
+    "style-loader": "^0.19.1",
+    "webpack": "^3.10.0"
   },
   "dependencies": {
     "loader-utils": "^1.1.0"

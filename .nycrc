@@ -1,0 +1,16 @@
+{
+    "reporter": [
+        "lcov",
+        "text"
+    ],
+    "include": [
+        "src"
+    ],
+    "lines": 97,
+    "statements": 97,
+    "functions": 93,
+    "branches": 87,
+    "check-coverage": true,
+    "sourceMap": false,
+    "instrument": false
+}
