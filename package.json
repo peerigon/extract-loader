@@ -1,6 +1,6 @@
 {
   "name": "extract-loader",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "webpack loader to extract HTML and CSS from the bundle",
   "main": "lib/extractLoader.js",
   "scripts": {
@@ -16,7 +16,13 @@
     "type": "git",
     "url": "git+https://github.com/peerigon/extract-loader.git"
   },
-  "keywords": ["webpack", "loader", "extract", "html", "css"],
+  "keywords": [
+    "webpack",
+    "loader",
+    "extract",
+    "html",
+    "css"
+  ],
   "author": "peerigon <developers@peerigon.com>",
   "license": "Unlicense",
   "bugs": {
@@ -47,5 +53,7 @@
   "dependencies": {
     "loader-utils": "^1.1.0"
   },
-  "files": ["lib"]
+  "files": [
+    "lib"
+  ]
 }
