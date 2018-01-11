@@ -16,13 +16,7 @@
     "type": "git",
     "url": "git+https://github.com/peerigon/extract-loader.git"
   },
-  "keywords": [
-    "webpack",
-    "loader",
-    "extract",
-    "html",
-    "css"
-  ],
+  "keywords": ["webpack", "loader", "extract", "html", "css"],
   "author": "peerigon <developers@peerigon.com>",
   "license": "Unlicense",
   "bugs": {
@@ -52,5 +46,6 @@
   },
   "dependencies": {
     "loader-utils": "^1.1.0"
-  }
+  },
+  "files": ["lib"]
 }
