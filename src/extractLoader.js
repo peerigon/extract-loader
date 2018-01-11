@@ -16,8 +16,7 @@ import { getOptions } from "loader-utils";
  * Random placeholder. Marks the location in the source code where the result of other modules should be inserted.
  * @type {string}
  */
-const rndPlaceholder =
-    "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
+const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
 
 /**
  * Executes the given module's src in a fake context in order to get the resulting string.
@@ -37,15 +36,13 @@ function extractLoader(content) {
     });
     const sandbox = {
         require: resourcePath => {
-            const absPath = path
-                .resolve(path.dirname(this.resourcePath), resourcePath)
-                .split("?")[0];
+            const absPath = path.resolve(path.dirname(this.resourcePath), resourcePath).split("?")[0];
 
-            // If the required file is the css-loader helper, we just require it with node's require.
+            // If the required file is a css-loader helper, we just require it with node's require.
             // If the required file should be processed by a loader we do not touch it (even if it is a .js file).
-            if (/^[^!]*node_modules.*[/\\]css-loader[/\\].*\.js$/i.test(resourcePath)) {
-                // Mark the file as dependency so webpack's watcher is working for css-base.js. Other dependencies
-                // are automatically added by loadModule() below
+            if (/^[^!]*node_modules[/\\]css-loader[/\\].*\.js$/i.test(resourcePath)) {
+                // Mark the file as dependency so webpack's watcher is working for the css-loader helper.
+                // Other dependencies are automatically added by loadModule() below
                 this.addDependency(absPath);
 
                 return require(absPath); // eslint-disable-line import/no-dynamic-require
@@ -72,9 +69,7 @@ function extractLoader(content) {
             )
         )
         .then(results =>
-            sandbox.module.exports
-                .toString()
-                .replace(new RegExp(rndPlaceholder, "g"), () => results.shift())
+            sandbox.module.exports.toString().replace(new RegExp(rndPlaceholder, "g"), () => results.shift())
         )
         .then(content => callback(null, content))
         .catch(callback);
@@ -90,10 +85,7 @@ function extractLoader(content) {
 function loadModule(request) {
     return new Promise((resolve, reject) => {
         // LoaderContext.loadModule automatically calls LoaderContext.addDependency for all requested modules
-        this.loadModule(
-            request,
-            (err, src) => (err ? reject(err) : resolve(src))
-        );
+        this.loadModule(request, (err, src) => (err ? reject(err) : resolve(src)));
     });
 }
 
