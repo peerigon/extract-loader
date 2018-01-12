@@ -6,6 +6,12 @@ node_js:
   - "lts/*"
   - "4"
 
+before_script:
+  # Fixes an annoying bug in ESLint on Node 4
+  # https://github.com/babel/babel-eslint/issues/558
+  # TODO: Remove when Node 4 is not supported anymore
+  - npm install estraverse
+
 script:
   - npm test
 
