@@ -3,7 +3,7 @@ import path from "path";
 
 const pathToExtractLoader = path.resolve(
     __dirname,
-    "../../lib/extractLoader.js"
+    "../../src/extractLoader.js"
 );
 
 export default function ({ testModule, publicPath, loaderOptions }) {
