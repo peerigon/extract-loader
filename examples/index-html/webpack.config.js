@@ -3,6 +3,7 @@ var path = require("path");
 var indexHtml = path.join(__dirname, "app", "index.html");
 
 module.exports = {
+    mode: "development",
     entry: [
         path.join(__dirname, "app", "main.js"),
         indexHtml
@@ -12,20 +13,28 @@ module.exports = {
         filename: "bundle.js"
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: indexHtml,
-                loaders: [
-                    "file-loader?name=[name].[ext]",
+                use: [
+                    {
+                        loader: "file-loader",
+                        options: {
+                            name: "[name].[ext]"
+                        }
+                    },
                     path.resolve(__dirname, "..", "..", "lib", "extractLoader.js"),
-                    "html-loader?" + JSON.stringify({
-                        attrs: ["img:src", "link:href"]
-                    })
+                    {
+                        loader: "html-loader",
+                        options: {
+                            attrs: ["img:src", "link:href"]
+                        }
+                    }
                 ]
             },
             {
                 test: /\.css$/,
-                loaders: [
+                use: [
                     "file-loader",
                     path.resolve(__dirname, "..", "..", "lib", "extractLoader.js"),
                     "css-loader"
@@ -33,7 +42,7 @@ module.exports = {
             },
             {
                 test: /\.jpg$/,
-                loader: "file-loader"
+                use: "file-loader"
             }
         ]
     }

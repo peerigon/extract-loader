@@ -28,7 +28,9 @@ const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumbe
 function extractLoader(content) {
     const callback = this.async();
     const options = getOptions(this) || {};
-    const publicPath = options.publicPath === undefined ? this.options.output.publicPath : options.publicPath;
+    const publicPath = options.publicPath ||
+        (this.options && this.options.output && this.options.output.publicPath) ||
+        (this._compilation && this._compilation.outputOptions && this._compilation.outputOptions.publicPath);
     const dependencies = [];
     const script = new vm.Script(content, {
         filename: this.resourcePath,

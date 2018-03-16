@@ -13,6 +13,7 @@ if (live) {
 }
 
 module.exports = {
+    mode: live ? "production" : "development",
     entry: [
         path.join(__dirname, "app", "main.js"),
         mainCss.join("!")
