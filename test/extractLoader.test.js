@@ -92,8 +92,13 @@ describe("extractLoader", () => {
     it("should track all dependencies", () =>
         compile({ testModule: "stylesheet.html" }).then(stats => {
             const basePath = path.dirname(__dirname); // returns the parent dirname
-            const dependencies = stats.compilation.fileDependencies.map(
-                dependency => dependency.slice(basePath.length)
+            const dependencies = [];
+
+            // Use .forEach instead of map to be compatible with Array (webpack < 4) and SortableSet/Set (webpack 4+)
+            stats.compilation.fileDependencies.forEach(
+                dependency => {
+                    dependencies.push(dependency.slice(basePath.length));
+                }
             );
 
             expect(dependencies.sort()).to.eql(
