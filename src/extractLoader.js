@@ -28,7 +28,7 @@ const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumbe
 function extractLoader(content) {
     const callback = this.async();
     const options = getOptions(this) || {};
-    const publicPath = options.publicPath || getPublicPath(this);
+    const publicPath = getPublicPath(options, this);
     const dependencies = [];
     const script = new vm.Script(content, {
         filename: this.resourcePath,
@@ -124,16 +124,21 @@ function rndNumber() {
 }
 
 /**
- * Retrieves the public path from context.options (webpack <4) or context._compilation (webpack 4+).
+ * Retrieves the public path from the loader options, context.options (webpack <4) or context._compilation (webpack 4+).
  * context._compilation is likely to get removed in a future release, so this whole function should be removed then.
  * See: https://github.com/peerigon/extract-loader/issues/35
  *
  * @deprecated
+ * @param {Object} options - Extract-loader options
  * @param {Object} context - Webpack loader context
  * @returns {string}
  */
-function getPublicPath(context) {
+function getPublicPath(options, context) {
     const property = "publicPath";
+
+    if (property in options) {
+        return options[property];
+    }
 
     if (context.options && context.options.output && property in context.options.output) {
         return context.options.output[property];
