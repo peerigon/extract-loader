@@ -5,7 +5,10 @@ All notable changes to this project will be documented in this file. See [standa
 <a name="2.0.1"></a>
 ## [2.0.1](https://github.com/peerigon/extract-loader/compare/v2.0.0...v2.0.1) (2018-03-20)
 
+Re-Release, because v2.0.0 was missing the `lib/extractLoader.js` file [#37](https://github.com/peerigon/extract-loader/issues/37)
 
+### Bug Fixes
+*   Update package.json `engines` field to properly state Node.js 6+ support
 
 <a name="2.0.0"></a>
 
