@@ -35,7 +35,7 @@ Bundling CSS with webpack has some nice advantages like referencing images and f
 
 With the extract-loader, you are able to reference your `main.css` as regular `entry`. The following `webpack.config.js` shows how to load your styles with the [style-loader](https://github.com/webpack/style-loader) in development and as separate file in production.
 
-```javascript
+```js
 const live = process.env.NODE_ENV === "production";
 const mainCss = ["css-loader", path.join(__dirname, "app", "main.css")];
 
@@ -58,7 +58,7 @@ module.exports = {
 
 You can even add your `index.html` as `entry` and just reference your stylesheets from there. You just need to tell the html-loader to also pick up `link:href`:
 
-```javascript
+```js
 const indexHtml = path.join(__dirname, "app", "index.html");
 
 module.exports = {
