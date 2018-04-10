@@ -31,7 +31,7 @@ Examples
 
 ### [Extracting a main.css](https://github.com/peerigon/extract-loader/tree/master/examples/main-css)
 
-Bundling CSS with webpack has some nice advantages like referencing images and fonts with hashed urls or [hot module replacement](http://webpack.github.io/docs/hot-module-replacement-with-webpack.html) in development. In production, on the other hand, it's not a good idea to apply your stylesheets depending on JS execution. Rendering may be delayed or even a [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) might be visible. Thus it's still better to have them as separate files in your final production build.
+Bundling CSS with webpack has some nice advantages like referencing images and fonts with hashed urls or [hot module replacement](https://webpack.js.org/concepts/hot-module-replacement) in development. In production, on the other hand, it's not a good idea to apply your stylesheets depending on JS execution. Rendering may be delayed or even a [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) might be visible. Thus it's still better to have them as separate files in your final production build.
 
 With the extract-loader, you are able to reference your `main.css` as regular `entry`. The following `webpack.config.js` shows how to load your styles with the [style-loader](https://github.com/webpack/style-loader) in development and as separate file in production.
 
@@ -150,7 +150,7 @@ Options
 ------------------------------------------------------------------------
 
 There is currently exactly one option: `publicPath`.
-If you are using a relative `publicPath` in webpack's [output options](http://webpack.github.io/docs/configuration.html#output-publicpath) and extracting to a file with the `file-loader`, you might need this to account for the location of your extracted file.
+If you are using a relative `publicPath` in webpack's [output options](https://webpack.js.org/configuration/output/#output-publicpath) and extracting to a file with the `file-loader`, you might need this to account for the location of your extracted file.
 
 Example:
 
