@@ -40,7 +40,7 @@ function extractLoader(content) {
 
             // If the required file is a css-loader helper, we just require it with node's require.
             // If the required file should be processed by a loader we do not touch it (even if it is a .js file).
-            if (/^[^!]*node_modules[/\\]css-loader[/\\].*\.js$/i.test(absPath)) {
+            if (/^[^!]*node_modules[/\\](_css-loader@[.\d]+@)*css-loader[/\\].*\.js$/i.test(absPath)) {
                 // Mark the file as dependency so webpack's watcher is working for the css-loader helper.
                 // Other dependencies are automatically added by loadModule() below
                 this.addDependency(absPath);
