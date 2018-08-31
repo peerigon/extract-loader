@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/peerigon/extract-loader/compare/v2.0.1...v3.0.0) (2018-08-31)
+
+
+### Features
+
+* Add source map support ([#43](https://github.com/peerigon/extract-loader/issues/43)) ([8f56c2f](https://github.com/peerigon/extract-loader/commit/8f56c2f)), closes [#1](https://github.com/peerigon/extract-loader/issues/1)
+* Enable deep evaluation of dependency graph ([#42](https://github.com/peerigon/extract-loader/issues/42)) ([c5aff66](https://github.com/peerigon/extract-loader/commit/c5aff66))
+
+
+### BREAKING CHANGES
+
+* Although the change is not breaking according to our tests, we assume that there could be problems in certain projects.
+
+
+
 <a name="2.0.1"></a>
 ## [2.0.1](https://github.com/peerigon/extract-loader/compare/v2.0.0...v2.0.1) (2018-03-20)
 
