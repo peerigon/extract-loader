@@ -74,6 +74,9 @@ export default function ({ testModule, publicPath, loaderOptions }) {
                                 },
                                 {
                                     loader: "css-loader",
+                                    options: {
+                                        sourceMap: true,
+                                    },
                                 },
                             ],
                         },

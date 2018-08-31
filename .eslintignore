@@ -5,6 +5,6 @@ lib
 test/dist
 
 # Syntax error on purpose
-test/modules/error.js
+test/modules/error-syntax.js
 
 examples

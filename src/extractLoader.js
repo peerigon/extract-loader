@@ -1,9 +1,10 @@
 import vm from "vm";
 import path from "path";
 import { getOptions } from "loader-utils";
+import resolve from "resolve";
 
 /**
- * @name LoaderContext
+ * @type LoaderContext
  * @property {function} cacheable
  * @property {function} async
  * @property {function} addDependency
@@ -13,105 +14,114 @@ import { getOptions } from "loader-utils";
  */
 
 /**
- * Random placeholder. Marks the location in the source code where the result of other modules should be inserted.
- * @type {string}
- */
-const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
-
-/**
  * Executes the given module's src in a fake context in order to get the resulting string.
  *
  * @this LoaderContext
+ * @param {string} src
  * @throws Error
- * @param {string} content - the module's src
  */
-function extractLoader(content) {
+function extractLoader(src) {
     const callback = this.async();
     const options = getOptions(this) || {};
     const publicPath = getPublicPath(options, this);
-    const dependencies = [];
-    const script = new vm.Script(content, {
-        filename: this.resourcePath,
-        displayErrors: true,
-    });
-    const sandbox = {
-        require: resourcePath => {
-            const absPath = path.resolve(path.dirname(this.resourcePath), resourcePath).split("?")[0];
-
-            // If the required file is a css-loader helper, we just require it with node's require.
-            // If the required file should be processed by a loader we do not touch it (even if it is a .js file).
-            if (/^[^!]*node_modules[/\\]css-loader[/\\].*\.js$/i.test(absPath)) {
-                // Mark the file as dependency so webpack's watcher is working for the css-loader helper.
-                // Other dependencies are automatically added by loadModule() below
-                this.addDependency(absPath);
-
-                return require(absPath); // eslint-disable-line import/no-dynamic-require
-            }
-
-            dependencies.push(resourcePath);
-
-            return rndPlaceholder;
-        },
-        module: {},
-        exports: {},
-    };
 
     this.cacheable();
 
-    sandbox.module.exports = sandbox.exports;
-    script.runInNewContext(sandbox);
-
-    Promise.all(dependencies.map(loadModule, this))
-        .then(sources =>
-            sources.map(
-                // runModule may throw an error, so it's important that our promise is rejected in this case
-                (src, i) => runModule(src, dependencies[i], publicPath)
-            )
-        )
-        .then(results =>
-            sandbox.module.exports.toString().replace(new RegExp(rndPlaceholder, "g"), () => results.shift())
-        )
-        .then(content => callback(null, content))
-        .catch(callback);
+    evalDependencyGraph({ loaderContext: this, src, filename: this.resourcePath, publicPath })
+        .then(content => callback(null, content), callback);
 }
 
-/**
- * Loads the given module with webpack's internal module loader and returns the source code.
- *
- * @this LoaderContext
- * @param {string} request
- * @returns {Promise<string>}
- */
-function loadModule(request) {
-    return new Promise((resolve, reject) => {
-        // LoaderContext.loadModule automatically calls LoaderContext.addDependency for all requested modules
-        this.loadModule(request, (err, src) => (err ? reject(err) : resolve(src)));
-    });
-}
+function evalDependencyGraph({ loaderContext, src, filename, publicPath = "" }) {
+    const moduleCache = new Map();
 
-/**
- * Executes the given CommonJS module in a fake context to get the exported string. The given module is expected to
- * just return a string without requiring further modules.
- *
- * @throws Error
- * @param {string} src
- * @param {string} filename
- * @param {string} [publicPath]
- * @returns {string}
- */
-function runModule(src, filename, publicPath = "") {
-    const script = new vm.Script(src, {
-        filename,
-        displayErrors: true,
-    });
-    const sandbox = {
-        module: {},
-        __webpack_public_path__: publicPath, // eslint-disable-line camelcase
-    };
+    function loadModule(filename) {
+        return new Promise((resolve, reject) => {
+            // loaderContext.loadModule automatically calls loaderContext.addDependency for all requested modules
+            loaderContext.loadModule(filename, (error, src) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(src);
+                }
+            });
+        });
+    }
 
-    script.runInNewContext(sandbox);
+    async function evalModule(src, filename) {
+        const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
+        const rndPlaceholderPattern = new RegExp(rndPlaceholder, "g");
+        const script = new vm.Script(src, {
+            filename,
+            displayErrors: true,
+        });
+        const newDependencies = [];
+        const exports = {};
+        const sandbox = Object.assign({}, global, {
+            module: {
+                exports,
+            },
+            exports,
+            __webpack_public_path__: publicPath, // eslint-disable-line camelcase
+            require: givenRelativePath => {
+                const indexOfQuery = Math.max(givenRelativePath.indexOf("?"), givenRelativePath.length);
+                const relativePathWithoutQuery = givenRelativePath.slice(0, indexOfQuery);
+                const indexOfLastExclMark = relativePathWithoutQuery.lastIndexOf("!");
+                const query = givenRelativePath.slice(indexOfQuery);
+                const loaders = givenRelativePath.slice(0, indexOfLastExclMark + 1);
+                const relativePath = relativePathWithoutQuery.slice(indexOfLastExclMark + 1);
+                const absolutePath = resolve.sync(relativePath, {
+                    basedir: path.dirname(filename),
+                });
+                const ext = path.extname(absolutePath);
 
-    return sandbox.module.exports.toString();
+                if (moduleCache.has(absolutePath)) {
+                    return moduleCache.get(absolutePath);
+                }
+
+                // If the required file is a css-loader helper, we just require it with node's require.
+                // If the required file should be processed by a loader we do not touch it (even if it is a .js file).
+                if (loaders === "" && ext === ".js") {
+                    // Mark the file as dependency so webpack's watcher is working for the css-loader helper.
+                    // Other dependencies are automatically added by loadModule() below
+                    loaderContext.addDependency(absolutePath);
+
+                    const exports = require(absolutePath); // eslint-disable-line import/no-dynamic-require
+
+                    moduleCache.set(absolutePath, exports);
+
+                    return exports;
+                }
+
+                newDependencies.push({
+                    absolutePath,
+                    absoluteRequest: loaders + absolutePath + query,
+                });
+
+                return rndPlaceholder;
+            },
+        });
+
+        script.runInNewContext(sandbox);
+
+        const extractedDependencyContent = await Promise.all(
+            newDependencies.map(async ({ absolutePath, absoluteRequest }) => {
+                const src = await loadModule(absoluteRequest);
+
+                return evalModule(src, absolutePath);
+            })
+        );
+        const contentWithPlaceholders = sandbox.module.exports.toString();
+        const extractedContent = contentWithPlaceholders.replace(
+            rndPlaceholderPattern,
+            () => extractedDependencyContent.shift()
+        );
+
+        moduleCache.set(filename, extractedContent);
+
+        return extractedContent;
+    }
+
+    return evalModule(src, filename);
 }
 
 /**
@@ -134,18 +144,16 @@ function rndNumber() {
  * @returns {string}
  */
 function getPublicPath(options, context) {
-    const property = "publicPath";
-
-    if (property in options) {
-        return options[property];
+    if ("publicPath" in options) {
+        return options.publicPath;
     }
 
-    if (context.options && context.options.output && property in context.options.output) {
-        return context.options.output[property];
+    if (context.options && context.options.output && "publicPath" in context.options.output) {
+        return context.options.output.publicPath;
     }
 
-    if (context._compilation && context._compilation.outputOptions && property in context._compilation.outputOptions) {
-        return context._compilation.outputOptions[property];
+    if (context._compilation && context._compilation.outputOptions && "publicPath" in context._compilation.outputOptions) {
+        return context._compilation.outputOptions.publicPath;
     }
 
     return "";
