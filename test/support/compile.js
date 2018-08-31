@@ -1,12 +1,12 @@
-import webpack from "webpack";
 import path from "path";
+import webpack from "webpack";
 
 const pathToExtractLoader = path.resolve(
     __dirname,
     "../../src/extractLoader.js"
 );
 
-export default function ({ testModule, publicPath, loaderOptions }) {
+function compile({testModule, publicPath, loaderOptions}) {
     const testModulePath = path.resolve(__dirname, "../modules/", testModule);
 
     return new Promise((resolve, reject) => {
@@ -94,7 +94,7 @@ export default function ({ testModule, publicPath, loaderOptions }) {
                     ],
                 },
             },
-            (err, stats) => {
+            (err, stats) => { // eslint-disable-line promise/prefer-await-to-callbacks
                 if (err || stats.hasErrors() || stats.hasWarnings()) {
                     reject(err || stats.toString("minimal"));
                 } else {
@@ -104,3 +104,5 @@ export default function ({ testModule, publicPath, loaderOptions }) {
         );
     });
 }
+
+export default compile;
