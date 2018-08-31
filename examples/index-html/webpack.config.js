@@ -1,49 +1,50 @@
-var path = require("path");
+"use strict";
 
-var indexHtml = path.join(__dirname, "app", "index.html");
+module.exports = ({ mode }) => {
+    const pathToMainJs = require.resolve("./app/main.js");
+    const pathToIndexHtml = require.resolve("./app/index.html");
 
-module.exports = {
-    mode: "development",
-    entry: [
-        path.join(__dirname, "app", "main.js"),
-        indexHtml
-    ],
-    output: {
-        path: path.join(__dirname, "dist"),
-        filename: "bundle.js"
-    },
-    module: {
-        rules: [
-            {
-                test: indexHtml,
-                use: [
-                    {
-                        loader: "file-loader",
-                        options: {
-                            name: "[name].[ext]"
+    return {
+        mode,
+        entry: [
+            pathToMainJs,
+            pathToIndexHtml
+        ],
+        module: {
+            rules: [
+                {
+                    test: pathToIndexHtml,
+                    use: [
+                        "file-loader",
+                        // should be just "extract-loader" in your case
+                        require.resolve("../../lib/extractLoader.js"),
+                        {
+                            loader: "html-loader",
+                            options: {
+                                attrs: ["img:src", "link:href"]
+                            }
                         }
-                    },
-                    path.resolve(__dirname, "..", "..", "lib", "extractLoader.js"),
-                    {
-                        loader: "html-loader",
-                        options: {
-                            attrs: ["img:src", "link:href"]
+                    ]
+                },
+                {
+                    test: /\.css$/,
+                    use: [
+                        "file-loader",
+                        // should be just "extract-loader" in your case
+                        require.resolve("../../lib/extractLoader.js"),
+                        {
+                            loader: "css-loader",
+                            options: {
+                                sourceMap: true
+                            }
                         }
-                    }
-                ]
-            },
-            {
-                test: /\.css$/,
-                use: [
-                    "file-loader",
-                    path.resolve(__dirname, "..", "..", "lib", "extractLoader.js"),
-                    "css-loader"
-                ]
-            },
-            {
-                test: /\.jpg$/,
-                use: "file-loader"
-            }
-        ]
-    }
+                    ]
+                },
+                {
+                    test: /\.jpg$/,
+                    use: "file-loader"
+                }
+            ]
+        }
+    };
 };

@@ -34,15 +34,21 @@ describe("extractLoader", () => {
         }));
     it("should extract the css of modules/simple.css into simple.css", () =>
         compile({ testModule: "simple.css" }).then(() => {
+            const originalContent = fs.readFileSync(
+                path.resolve(__dirname, "modules/simple.css"),
+                "utf8"
+            );
             const simpleCss = path.resolve(__dirname, "dist/simple-dist.css");
 
-            expect(simpleCss).to.be.a.file();
-            expect(simpleCss).to.have.content(
-                fs.readFileSync(
-                    path.resolve(__dirname, "modules/simple.css"),
-                    "utf8"
-                )
-            );
+            expect(simpleCss).to.be.a.file()
+                .with.contents.that.match(new RegExp(originalContent));
+        }));
+    it("should extract the source maps", () =>
+        compile({ testModule: "simple.css" }).then(() => {
+            const simpleCss = path.resolve(__dirname, "dist/simple-dist.css");
+
+            expect(simpleCss).to.be.a.file()
+                .with.contents.that.match(/\/\*# sourceMappingURL=data:application\/json;charset=utf-8;base64,/);
         }));
     it("should extract the img url into img.js", () => compile({ testModule: "img.js" }).then(() => {
         const imgJs = path.resolve(__dirname, "dist/img-dist.js");
@@ -171,7 +177,7 @@ describe("extractLoader", () => {
                 expect(message).to.match(/Error: Cannot find module '\.\/does-not-exist\.jpg'/);
             }
         ));
-    it("should report resolve errors", () =>
+    it("should report resolve loader errors", () =>
         compile({ testModule: "error-resolve-loader.js" }).then(
             () => {
                 throw new Error("Did not throw expected error");
@@ -180,6 +186,29 @@ describe("extractLoader", () => {
                 expect(message).to.match(/Error: Can't resolve 'does-not-exist'/);
             }
         ));
+    it("should not leak globals when there is an error during toString()", () =>
+        compile({ testModule: "error-to-string.js" }).then(
+            () => {
+                throw new Error("Did not throw expected error");
+            },
+            () => {
+                expect("btoa" in global).to.be.false;
+            }
+        ));
+    it("should restore the original globals when there is an error during toString()", () => {
+        const myBtoa = {};
+
+        global.btoa = myBtoa;
+
+        return compile({ testModule: "error-to-string.js" }).then(
+            () => {
+                throw new Error("Did not throw expected error");
+            },
+            () => {
+                expect(global.btoa).to.equal(myBtoa);
+            }
+        );
+    });
     it("should flag itself as cacheable", done => {
         const loaderContext = {
             async() {
