@@ -1,10 +1,11 @@
+/* eslint-disable promise/always-return, promise/prefer-await-to-then */
 import path from "path";
 import fs from "fs";
 import rimRaf from "rimraf";
-import chai, { expect } from "chai";
+import chai, {expect} from "chai";
 import chaiFs from "chai-fs";
-import compile from "./support/compile";
 import extractLoader from "../src/extractLoader";
+import compile from "./support/compile";
 
 chai.use(chaiFs);
 
@@ -14,14 +15,14 @@ describe("extractLoader", () => {
         rimRaf.sync(path.resolve(__dirname, "dist"));
     });
     it("should extract 'hello' into simple.js", () =>
-        compile({ testModule: "simple.js" }).then(() => {
+        compile({testModule: "simple.js"}).then(() => {
             const simpleJs = path.resolve(__dirname, "dist/simple-dist.js");
 
             expect(simpleJs).to.be.a.file();
             expect(simpleJs).to.have.content("hello");
         }));
     it("should extract the html of modules/simple.html into simple.html", () =>
-        compile({ testModule: "simple.html" }).then(() => {
+        compile({testModule: "simple.html"}).then(() => {
             const simpleHtml = path.resolve(__dirname, "dist/simple-dist.html");
 
             expect(simpleHtml).to.be.a.file();
@@ -33,7 +34,7 @@ describe("extractLoader", () => {
             );
         }));
     it("should extract the css of modules/simple.css into simple.css", () =>
-        compile({ testModule: "simple.css" }).then(() => {
+        compile({testModule: "simple.css"}).then(() => {
             const originalContent = fs.readFileSync(
                 path.resolve(__dirname, "modules/simple.css"),
                 "utf8"
@@ -44,20 +45,20 @@ describe("extractLoader", () => {
                 .with.contents.that.match(new RegExp(originalContent));
         }));
     it("should extract the source maps", () =>
-        compile({ testModule: "simple.css" }).then(() => {
+        compile({testModule: "simple.css"}).then(() => {
             const simpleCss = path.resolve(__dirname, "dist/simple-dist.css");
 
             expect(simpleCss).to.be.a.file()
                 .with.contents.that.match(/\/\*# sourceMappingURL=data:application\/json;charset=utf-8;base64,/);
         }));
-    it("should extract the img url into img.js", () => compile({ testModule: "img.js" }).then(() => {
+    it("should extract the img url into img.js", () => compile({testModule: "img.js"}).then(() => {
         const imgJs = path.resolve(__dirname, "dist/img-dist.js");
 
         expect(imgJs).to.be.a.file();
         expect(imgJs).to.have.content("hi-dist.jpg");
     }));
     it("should extract the img.html as file, emit the referenced img and rewrite the url", () =>
-        compile({ testModule: "img.html" }).then(() => {
+        compile({testModule: "img.html"}).then(() => {
             const imgHtml = path.resolve(__dirname, "dist/img-dist.html");
             const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
 
@@ -68,7 +69,7 @@ describe("extractLoader", () => {
             );
         }));
     it("should extract the img.css as file, emit the referenced img and rewrite the url", () =>
-        compile({ testModule: "img.css" }).then(() => {
+        compile({testModule: "img.css"}).then(() => {
             const imgCss = path.resolve(__dirname, "dist/img-dist.css");
             const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
 
@@ -77,7 +78,7 @@ describe("extractLoader", () => {
             expect(imgCss).to.have.content.that.match(/ url\(hi-dist\.jpg\);/);
         }));
     it("should extract the stylesheet.html and the referenced img.css as file, emit the files and rewrite all urls", () =>
-        compile({ testModule: "stylesheet.html" }).then(() => {
+        compile({testModule: "stylesheet.html"}).then(() => {
             const stylesheetHtml = path.resolve(
                 __dirname,
                 "dist/stylesheet-dist.html"
@@ -97,7 +98,7 @@ describe("extractLoader", () => {
             expect(imgCss).to.have.content.that.match(/ url\(hi-dist\.jpg\);/);
         }));
     it("should extract css files with dependencies", () =>
-        compile({ testModule: "deep.css" }).then(() => {
+        compile({testModule: "deep.css"}).then(() => {
             const deepCss = path.resolve(
                 __dirname,
                 "dist/deep-dist.css"
@@ -111,10 +112,12 @@ describe("extractLoader", () => {
             expect(deepCss).to.have.content.that.match(/ url\(hi-dist\.jpg\);/);
         }));
     it("should track all dependencies", () =>
-        compile({ testModule: "stylesheet.html" }).then(stats => {
+        compile({testModule: "stylesheet.html"}).then(stats => {
             const basePath = path.dirname(__dirname); // returns the parent dirname
-            const dependencies = Array.from(stats.compilation.fileDependencies)
-                .map(dependency => dependency.slice(basePath.length));
+            const dependencies = Array.from(
+                stats.compilation.fileDependencies,
+                dependency => dependency.slice(basePath.length)
+            );
 
             expect(dependencies.sort()).to.eql(
                 [
@@ -127,7 +130,7 @@ describe("extractLoader", () => {
             );
         }));
     it("should reference the img with the given publicPath", () =>
-        compile({ testModule: "img.html", publicPath: "/test/" }).then(() => {
+        compile({testModule: "img.html", publicPath: "/test/"}).then(() => {
             const imgHtml = path.resolve(__dirname, "dist/img-dist.html");
             const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
 
@@ -141,7 +144,7 @@ describe("extractLoader", () => {
         compile({
             testModule: "img.html",
             publicPath: "/test/",
-            loaderOptions: { publicPath: "/other/" },
+            loaderOptions: {publicPath: "/other/"},
         }).then(() => {
             const imgHtml = path.resolve(__dirname, "dist/img-dist.html");
             const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
@@ -152,7 +155,7 @@ describe("extractLoader", () => {
                 /<img src="\/other\/hi-dist\.jpg">/
             );
         }));
-    it("should support explicit loader chains", () => compile({ testModule: "loader.html" }).then(() => {
+    it("should support explicit loader chains", () => compile({testModule: "loader.html"}).then(() => {
         const loaderHtml = path.resolve(__dirname, "dist/loader-dist.html");
         const errJs = path.resolve(__dirname, "dist/err.js");
 
@@ -160,7 +163,7 @@ describe("extractLoader", () => {
         expect(errJs).to.have.content("this is a syntax error\n");
     }));
     it("should report syntax errors", () =>
-        compile({ testModule: "error-syntax.js" }).then(
+        compile({testModule: "error-syntax.js"}).then(
             () => {
                 throw new Error("Did not throw expected error");
             },
@@ -169,7 +172,7 @@ describe("extractLoader", () => {
             }
         ));
     it("should report resolve errors", () =>
-        compile({ testModule: "error-resolve.js" }).then(
+        compile({testModule: "error-resolve.js"}).then(
             () => {
                 throw new Error("Did not throw expected error");
             },
@@ -178,7 +181,7 @@ describe("extractLoader", () => {
             }
         ));
     it("should report resolve loader errors", () =>
-        compile({ testModule: "error-resolve-loader.js" }).then(
+        compile({testModule: "error-resolve-loader.js"}).then(
             () => {
                 throw new Error("Did not throw expected error");
             },
@@ -187,7 +190,7 @@ describe("extractLoader", () => {
             }
         ));
     it("should not leak globals when there is an error during toString()", () =>
-        compile({ testModule: "error-to-string.js" }).then(
+        compile({testModule: "error-to-string.js"}).then(
             () => {
                 throw new Error("Did not throw expected error");
             },
@@ -200,7 +203,7 @@ describe("extractLoader", () => {
 
         global.btoa = myBtoa;
 
-        return compile({ testModule: "error-to-string.js" }).then(
+        return compile({testModule: "error-to-string.js"}).then(
             () => {
                 throw new Error("Did not throw expected error");
             },
@@ -223,7 +226,7 @@ describe("extractLoader", () => {
             cacheable() {
                 cacheableCalled = true;
             },
-            options: { output: {} },
+            options: {output: {}},
         };
         let cacheableCalled = false;
 

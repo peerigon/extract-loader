@@ -1,6 +1,6 @@
 import vm from "vm";
 import path from "path";
-import { getOptions } from "loader-utils";
+import {getOptions} from "loader-utils";
 import resolve from "resolve";
 import btoa from "btoa";
 
@@ -21,18 +21,26 @@ import btoa from "btoa";
  * @param {string} src
  * @throws Error
  */
-function extractLoader(src) {
-    const callback = this.async();
+async function extractLoader(src) {
+    const done = this.async();
     const options = getOptions(this) || {};
     const publicPath = getPublicPath(options, this);
 
     this.cacheable();
 
-    evalDependencyGraph({ loaderContext: this, src, filename: this.resourcePath, publicPath })
-        .then(content => callback(null, content), callback);
+    try {
+        done(null, await evalDependencyGraph({
+            loaderContext: this,
+            src,
+            filename: this.resourcePath,
+            publicPath,
+        }));
+    } catch (error) {
+        done(error);
+    }
 }
 
-function evalDependencyGraph({ loaderContext, src, filename, publicPath = "" }) {
+function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
     const moduleCache = new Map();
 
     function loadModule(filename) {
@@ -124,7 +132,7 @@ function evalDependencyGraph({ loaderContext, src, filename, publicPath = "" }) 
         script.runInNewContext(sandbox);
 
         const extractedDependencyContent = await Promise.all(
-            newDependencies.map(async ({ absolutePath, absoluteRequest }) => {
+            newDependencies.map(async ({absolutePath, absoluteRequest}) => {
                 const src = await loadModule(absoluteRequest);
 
                 return evalModule(src, absolutePath);

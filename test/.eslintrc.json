@@ -1,6 +1,5 @@
 {
     "extends": [
-        "peerigon/base",
         "peerigon/tests"
     ],
     "env": {
