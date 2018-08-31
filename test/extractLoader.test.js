@@ -9,7 +9,8 @@ import extractLoader from "../src/extractLoader";
 chai.use(chaiFs);
 
 describe("extractLoader", () => {
-    afterEach(() => {
+    // Using beforeEach so that we can inspect the test compilation afterwards
+    beforeEach(() => {
         rimRaf.sync(path.resolve(__dirname, "dist"));
     });
     it("should extract 'hello' into simple.js", () =>
@@ -89,6 +90,20 @@ describe("extractLoader", () => {
             );
             expect(imgCss).to.have.content.that.match(/ url\(hi-dist\.jpg\);/);
         }));
+    it("should extract css files with dependencies", () =>
+        compile({ testModule: "deep.css" }).then(() => {
+            const deepCss = path.resolve(
+                __dirname,
+                "dist/deep-dist.css"
+            );
+            // const imgCss = path.resolve(__dirname, "dist/img-dist.css");
+            const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
+
+            expect(deepCss).to.be.a.file();
+            // expect(imgCss).to.not.be.a.file();
+            expect(imgJpg).to.be.a.file();
+            expect(deepCss).to.have.content.that.match(/ url\(hi-dist\.jpg\);/);
+        }));
     it("should track all dependencies", () =>
         compile({ testModule: "stylesheet.html" }).then(stats => {
             const basePath = path.dirname(__dirname); // returns the parent dirname
@@ -139,12 +154,30 @@ describe("extractLoader", () => {
         expect(errJs).to.have.content("this is a syntax error\n");
     }));
     it("should report syntax errors", () =>
-        compile({ testModule: "error.js" }).then(
+        compile({ testModule: "error-syntax.js" }).then(
             () => {
                 throw new Error("Did not throw expected error");
             },
             message => {
                 expect(message).to.match(/SyntaxError: Unexpected identifier/);
+            }
+        ));
+    it("should report resolve errors", () =>
+        compile({ testModule: "error-resolve.js" }).then(
+            () => {
+                throw new Error("Did not throw expected error");
+            },
+            message => {
+                expect(message).to.match(/Error: Cannot find module '\.\/does-not-exist\.jpg'/);
+            }
+        ));
+    it("should report resolve errors", () =>
+        compile({ testModule: "error-resolve-loader.js" }).then(
+            () => {
+                throw new Error("Did not throw expected error");
+            },
+            message => {
+                expect(message).to.match(/Error: Can't resolve 'does-not-exist'/);
             }
         ));
     it("should flag itself as cacheable", done => {
