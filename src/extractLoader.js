@@ -2,9 +2,10 @@ import vm from "vm";
 import path from "path";
 import { getOptions } from "loader-utils";
 import resolve from "resolve";
+import btoa from "btoa";
 
 /**
- * @type LoaderContext
+ * @typedef {Object} LoaderContext
  * @property {function} cacheable
  * @property {function} async
  * @property {function} addDependency
@@ -47,6 +48,25 @@ function evalDependencyGraph({ loaderContext, src, filename, publicPath = "" }) 
         });
     }
 
+    function extractExports(exports) {
+        const hasBtoa = "btoa" in global;
+        const previousBtoa = global.btoa;
+
+        global.btoa = btoa;
+
+        try {
+            return exports.toString();
+        } catch (error) {
+            throw error;
+        } finally {
+            if (hasBtoa) {
+                global.btoa = previousBtoa;
+            } else {
+                delete global.btoa;
+            }
+        }
+    }
+
     async function evalModule(src, filename) {
         const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
         const rndPlaceholderPattern = new RegExp(rndPlaceholder, "g");
@@ -78,7 +98,7 @@ function evalDependencyGraph({ loaderContext, src, filename, publicPath = "" }) 
                     return moduleCache.get(absolutePath);
                 }
 
-                // If the required file is a css-loader helper, we just require it with node's require.
+                // If the required file is a js file, we just require it with node's require.
                 // If the required file should be processed by a loader we do not touch it (even if it is a .js file).
                 if (loaders === "" && ext === ".js") {
                     // Mark the file as dependency so webpack's watcher is working for the css-loader helper.
@@ -110,7 +130,7 @@ function evalDependencyGraph({ loaderContext, src, filename, publicPath = "" }) 
                 return evalModule(src, absolutePath);
             })
         );
-        const contentWithPlaceholders = sandbox.module.exports.toString();
+        const contentWithPlaceholders = extractExports(sandbox.module.exports);
         const extractedContent = contentWithPlaceholders.replace(
             rndPlaceholderPattern,
             () => extractedDependencyContent.shift()

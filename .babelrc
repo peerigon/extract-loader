@@ -4,7 +4,7 @@
             "env",
             {
                 "targets": {
-                    "node": 4
+                    "node": 6
                 }
             }
         ]
@@ -13,6 +13,7 @@
         "transform-runtime"
     ],
     "sourceMaps": true,
+    "retainLines": true,
     "env": {
         "test": {
             "plugins": ["istanbul"]

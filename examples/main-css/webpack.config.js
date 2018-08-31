@@ -1,25 +1,34 @@
-var path = require("path");
+"use strict";
 
-var live = process.env.NODE_ENV === "production";
-var mainCss = ["css-loader", path.join(__dirname, "app", "main.css")];
+module.exports = ({ mode }) => {
+    const pathToMainCss = require.resolve("./app/main.css");
+    const loaders = [{
+        loader: "css-loader",
+        options: {
+            sourceMap: true
+        }
+    }];
 
-if (live) {
-    mainCss.unshift(
-        "file-loader?name=[name].[ext]",
-        path.resolve(__dirname, "..", "..", "lib", "extractLoader.js") // should be just "extract" in your case
-    );
-} else {
-    mainCss.unshift("style-loader");
-}
-
-module.exports = {
-    mode: live ? "production" : "development",
-    entry: [
-        path.join(__dirname, "app", "main.js"),
-        mainCss.join("!")
-    ],
-    output: {
-        path: path.join(__dirname, "dist"),
-        filename: "bundle.js"
+    if (mode === "production") {
+        loaders.unshift(
+            "file-loader",
+            // should be just "extract-loader" in your case
+            require.resolve("../../lib/extractLoader.js"),
+        );
+    } else {
+        loaders.unshift("style-loader");
     }
+
+    return {
+        mode,
+        entry: pathToMainCss,
+        module: {
+            rules: [
+                {
+                    test: pathToMainCss,
+                    loaders: loaders
+                },
+            ]
+        }
+    };
 };
