@@ -173,7 +173,7 @@ function rndNumber() {
  */
 function getPublicPath(options, context) {
     if ("publicPath" in options) {
-        return options.publicPath;
+        return typeof options.publicPath === 'function' ? options.publicPath(context) : options.publicPath;
     }
 
     if (context.options && context.options.output && "publicPath" in context.options.output) {
