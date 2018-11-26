@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.1.0"></a>
+# [3.1.0](https://github.com/peerigon/extract-loader/compare/v3.0.0...v3.1.0) (2018-11-26)
+
+
+### Features
+
+* Accept function as publicPath option ([#51](https://github.com/peerigon/extract-loader/issues/51)) ([678933e](https://github.com/peerigon/extract-loader/commit/678933e))
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/peerigon/extract-loader/compare/v2.0.1...v3.0.0) (2018-08-31)
 
