@@ -155,6 +155,24 @@ describe("extractLoader", () => {
                 /<img src="\/other\/hi-dist\.jpg">/
             );
         }));
+    it("should execute options.publicPath if it's defined as a function", done => {
+        let publicPathCalledWithContext = false;
+        const loaderContext = {
+            async: () => () => done(),
+            cacheable() {},
+            query: {
+                publicPath: context => {
+                    publicPathCalledWithContext = context === loaderContext;
+
+                    return "";
+                },
+            },
+        };
+
+        extractLoader.call(loaderContext, "");
+
+        expect(publicPathCalledWithContext).to.equal(true);
+    });
     it("should support explicit loader chains", () => compile({testModule: "loader.html"}).then(() => {
         const loaderHtml = path.resolve(__dirname, "dist/loader-dist.html");
         const errJs = path.resolve(__dirname, "dist/err.js");

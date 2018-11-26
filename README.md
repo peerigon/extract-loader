@@ -171,9 +171,9 @@ Options
 ------------------------------------------------------------------------
 
 There is currently exactly one option: `publicPath`.
-If you are using a relative `publicPath` in webpack's [output options](https://webpack.js.org/configuration/output/#output-publicpath) and extracting to a file with the `file-loader`, you might need this to account for the location of your extracted file.
+If you are using a relative `publicPath` in webpack's [output options](https://webpack.js.org/configuration/output/#output-publicpath) and extracting to a file with the `file-loader`, you might need this to account for the location of your extracted file. `publicPath` may be defined as a string or a function that accepts current [loader context](https://webpack.js.org/api/loaders/#the-loader-context) as single argument.
 
-Example:
+Example with publicPath option as a string:
 
 ```js
 module.exports = {
@@ -196,6 +196,42 @@ module.exports = {
                         loader: "extract-loader",
                         options: {
                             publicPath: "../",
+                        }
+                    },
+                    {
+                        loader: "css-loader",
+                    },
+                ],
+            }
+        ]
+    }
+};
+```
+
+Example with publicPath option as a function:
+
+```js
+module.exports = {
+    output: {
+        path: path.resolve("./dist"),
+        publicPath: "dist/"
+    },
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    {
+                        loader: "file-loader",
+                        options: {
+                            name: "assets/[name].[ext]",
+                        },
+                    },
+                    {
+                        loader: "extract-loader",
+                        options: {
+                            // dynamically return a relative publicPath based on how deep in directory structure the loaded file is in /src/ directory
+                            publicPath: (context) => '../'.repeat(path.relative(path.resolve('src'), context.context).split('/').length),
                         }
                     },
                     {
