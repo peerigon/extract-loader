@@ -91,7 +91,8 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
             exports,
             __webpack_public_path__: publicPath, // eslint-disable-line camelcase
             require: givenRelativePath => {
-                const indexOfQuery = givenRelativePath.includes("?") ? givenRelativePath.indexOf("?") : givenRelativePath.length;
+                const noDoubleQuestionMarkPath = givenRelativePath.replace(/\?\?/g, "##");
+                const indexOfQuery = noDoubleQuestionMarkPath.includes("?") ? noDoubleQuestionMarkPath.indexOf("?") : givenRelativePath.length;
                 const relativePathWithoutQuery = givenRelativePath.slice(0, indexOfQuery);
                 const indexOfLastExclMark = relativePathWithoutQuery.lastIndexOf("!");
                 const query = givenRelativePath.slice(indexOfQuery);
