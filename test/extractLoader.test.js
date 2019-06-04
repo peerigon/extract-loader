@@ -76,6 +76,7 @@ describe("extractLoader", () => {
             expect(imgCss).to.be.a.file();
             expect(imgJpg).to.be.a.file();
             expect(imgCss).to.have.content.that.match(/ url\(hi-dist\.jpg\);/);
+            expect(imgCss).to.not.have.content.that.match(/ url\(undefined\);/);
         }));
     it("should extract the stylesheet.html and the referenced img.css as file, emit the files and rewrite all urls", () =>
         compile({testModule: "stylesheet.html"}).then(() => {
@@ -121,8 +122,8 @@ describe("extractLoader", () => {
 
             expect(dependencies.sort()).to.eql(
                 [
-                    "/node_modules/css-loader/lib/css-base.js",
-                    "/node_modules/css-loader/lib/url/escape.js",
+                    "/node_modules/css-loader/dist/runtime/api.js",
+                    "/node_modules/css-loader/dist/runtime/url-escape.js",
                     "/test/modules/hi.jpg",
                     "/test/modules/img.css",
                     "/test/modules/stylesheet.html",
