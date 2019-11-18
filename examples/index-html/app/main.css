@@ -1,3 +1,6 @@
+/* @import "./common.css"; */
+@import "./symlinks/common.css";
+
 body {
     background: url(hi.jpg);
 }
