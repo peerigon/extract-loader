@@ -76,17 +76,14 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
     }
 
     function extractQueryFromPath(givenRelativePath) {
-        const indexOfQuery = givenRelativePath.indexOf("?");
+        const indexOfLastExclMark = givenRelativePath.lastIndexOf("!");
+        const indexOfQuery = givenRelativePath.lastIndexOf("?");
 
-        if (indexOfQuery !== -1) {
-            const indexOfExclamationMark = givenRelativePath.indexOf("!");
-
-            if (indexOfExclamationMark === -1 || indexOfExclamationMark > indexOfQuery) {
-                return {
-                    relativePathWithoutQuery: givenRelativePath.slice(0, indexOfQuery),
-                    query: givenRelativePath.slice(indexOfQuery),
-                };
-            }
+        if (indexOfQuery !== -1 && indexOfQuery > indexOfLastExclMark) {
+            return {
+                relativePathWithoutQuery: givenRelativePath.slice(0, indexOfQuery),
+                query: givenRelativePath.slice(indexOfQuery),
+            };
         }
 
         return {
