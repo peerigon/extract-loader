@@ -176,6 +176,9 @@ function rndNumber() {
         .slice(2);
 }
 
+// getPublicPath() encapsulates the complexity of reading the publicPath from the current
+// webpack config. Let's keep the complexity in this function.
+/* eslint-disable complexity  */
 /**
  * Retrieves the public path from the loader options, context.options (webpack <4) or context._compilation (webpack 4+).
  * context._compilation is likely to get removed in a future release, so this whole function should be removed then.
@@ -201,6 +204,7 @@ function getPublicPath(options, context) {
 
     return "";
 }
+/* eslint-enable complexity */
 
 // For CommonJS interoperability
 module.exports = extractLoader;
