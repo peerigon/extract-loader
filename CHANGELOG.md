@@ -1,3 +1,15 @@
+# [4.0.0](https://github.com/peerigon/extract-loader/compare/v3.1.0...v4.0.0) (2020-01-27)
+
+
+### chore
+
+* remove node v6 support ([3938c75](https://github.com/peerigon/extract-loader/commit/3938c75))
+
+
+### BREAKING CHANGES
+
+* remove node v6 support
+
 # Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
