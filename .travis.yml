@@ -3,8 +3,9 @@ os:
 language: node_js
 node_js:
   - "node"
+  - "12"
+  - "10"
   - "8"
-  - "6"
 
 script:
   - npm test
