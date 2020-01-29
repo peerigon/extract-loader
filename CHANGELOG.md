@@ -1,3 +1,10 @@
+## [4.0.2](https://github.com/peerigon/extract-loader/compare/v4.0.1...v4.0.2) (2020-01-29)
+
+
+### Bug Fixes
+
+* adjust release action to fix build step ([9216425](https://github.com/peerigon/extract-loader/commit/9216425))
+
 ## [4.0.1](https://github.com/peerigon/extract-loader/compare/v4.0.0...v4.0.1) (2020-01-28)
 
 
