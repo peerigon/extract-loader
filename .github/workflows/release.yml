@@ -17,6 +17,7 @@ jobs:
             - uses: actions/checkout@v1
             - run: npm ci --ignore-scripts
             - run: npm test
+            - run: npm run build
             - run: npm install @semantic-release/changelog@3 @semantic-release/git@7 --ignore-scripts --no-save
             - uses: codfish/semantic-release-action@v1
               env:
