@@ -76,6 +76,23 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
         }
     }
 
+    function extractQueryFromPath(givenRelativePath) {
+        const indexOfLastExclMark = givenRelativePath.lastIndexOf("!");
+        const indexOfQuery = givenRelativePath.lastIndexOf("?");
+
+        if (indexOfQuery !== -1 && indexOfQuery > indexOfLastExclMark) {
+            return {
+                relativePathWithoutQuery: givenRelativePath.slice(0, indexOfQuery),
+                query: givenRelativePath.slice(indexOfQuery),
+            };
+        }
+
+        return {
+            relativePathWithoutQuery: givenRelativePath,
+            query: "",
+        };
+    }
+
     async function evalModule(src, filename) {
         const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
         const rndPlaceholderPattern = new RegExp(rndPlaceholder, "g");
@@ -105,10 +122,8 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
             exports,
             __webpack_public_path__: publicPath, // eslint-disable-line camelcase
             require: givenRelativePath => {
-                const indexOfQuery = Math.max(givenRelativePath.indexOf("?"), givenRelativePath.length);
-                const relativePathWithoutQuery = givenRelativePath.slice(0, indexOfQuery);
+                const {relativePathWithoutQuery, query} = extractQueryFromPath(givenRelativePath);
                 const indexOfLastExclMark = relativePathWithoutQuery.lastIndexOf("!");
-                const query = givenRelativePath.slice(indexOfQuery);
                 const loaders = givenRelativePath.slice(0, indexOfLastExclMark + 1);
                 const relativePath = relativePathWithoutQuery.slice(indexOfLastExclMark + 1);
                 const absolutePath = resolve.sync(relativePath, {
@@ -175,6 +190,9 @@ function rndNumber() {
         .slice(2);
 }
 
+// getPublicPath() encapsulates the complexity of reading the publicPath from the current
+// webpack config. Let's keep the complexity in this function.
+/* eslint-disable complexity  */
 /**
  * Retrieves the public path from the loader options, context.options (webpack <4) or context._compilation (webpack 4+).
  * context._compilation is likely to get removed in a future release, so this whole function should be removed then.
@@ -200,6 +218,7 @@ function getPublicPath(options, context) {
 
     return "";
 }
+/* eslint-enable complexity */
 
 // For CommonJS interoperability
 module.exports = extractLoader;

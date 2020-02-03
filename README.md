@@ -22,7 +22,9 @@ The extract-loader works similar to the [extract-text-webpack-plugin](https://gi
 Installation
 ------------------------------------------------------------------------
 
-`npm install extract-loader`
+```bash
+$ npm install extract-loader --save-dev
+```
 
 <br>
 

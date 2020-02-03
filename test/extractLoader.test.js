@@ -21,6 +21,20 @@ describe("extractLoader", () => {
             expect(simpleJs).to.be.a.file();
             expect(simpleJs).to.have.content("hello");
         }));
+    it("should extract resource with query params into simple-css-with-query-param.js", () =>
+        compile({testModule: "simple-css-with-query-params.js"}).then(() => {
+            const simpleJs = path.resolve(__dirname, "dist/simple-css-with-query-params-dist.js");
+
+            expect(simpleJs).to.be.a.file();
+            expect(simpleJs).to.have.content("simple-dist.css");
+        }));
+    it("should extract resource with query params and loader into simple-css-with-query-param-and-loader.js", () =>
+        compile({testModule: "simple-css-with-query-params-and-loader.js"}).then(() => {
+            const simpleJs = path.resolve(__dirname, "dist/simple-css-with-query-params-and-loader-dist.js");
+
+            expect(simpleJs).to.be.a.file();
+            expect(simpleJs).to.have.content("renamed-simple.css");
+        }));
     it("should extract the html of modules/simple.html into simple.html", () =>
         compile({testModule: "simple.html"}).then(() => {
             const simpleHtml = path.resolve(__dirname, "dist/simple-dist.html");
