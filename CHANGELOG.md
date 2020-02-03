@@ -1,3 +1,36 @@
+## [4.0.3](https://github.com/peerigon/extract-loader/compare/v4.0.2...v4.0.3) (2020-01-29)
+
+
+### Bug Fixes
+
+* explicit build before release since prePublishOnly does not run ([83299e9](https://github.com/peerigon/extract-loader/commit/83299e9))
+
+## [4.0.2](https://github.com/peerigon/extract-loader/compare/v4.0.1...v4.0.2) (2020-01-29)
+
+
+### Bug Fixes
+
+* adjust release action to fix build step ([9216425](https://github.com/peerigon/extract-loader/commit/9216425))
+
+## [4.0.1](https://github.com/peerigon/extract-loader/compare/v4.0.0...v4.0.1) (2020-01-28)
+
+
+### Bug Fixes
+
+* handling resource paths with query parameters ([b4b2c0a](https://github.com/peerigon/extract-loader/commit/b4b2c0a))
+
+# [4.0.0](https://github.com/peerigon/extract-loader/compare/v3.1.0...v4.0.0) (2020-01-27)
+
+
+### chore
+
+* remove node v6 support ([3938c75](https://github.com/peerigon/extract-loader/commit/3938c75))
+
+
+### BREAKING CHANGES
+
+* remove node v6 support
+
 # Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
