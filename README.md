@@ -73,7 +73,7 @@ module.exports = ({ mode }) => {
 
 ### [Extracting the index.html](https://github.com/peerigon/extract-loader/tree/master/examples/index-html)
 
-You can even add your `index.html` as `entry` and just reference your stylesheets from there. You just need to tell the html-loader to also pick up `link:href`:
+You can even add your `index.html` as `entry` and reference your stylesheets from there. In that case, tell the html-loader to also pick up `link:href`:
 
 ```js
 module.exports = ({ mode }) => {
@@ -253,7 +253,7 @@ You need another option? Then you should think about:
 Contributing
 ------------------------------------------------------------------------
 
-From opening a bug report to creating a pull request: **every contribution is appreciated and welcome**. If you're planing to implement a new feature or change the api please create an issue first. This way we can ensure that your precious work is not in vain.
+From opening a bug report to creating a pull request: **every contribution is appreciated and welcome**. If you're planning to implement a new feature or change the api please create an issue first. This way we can ensure that your precious work is not in vain.
 
 All pull requests should have 100% test coverage (with notable exceptions) and need to pass all tests.
 
