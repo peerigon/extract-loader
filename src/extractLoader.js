@@ -103,6 +103,7 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
                 [
                     require("babel-preset-env"), {
                         modules: "commonjs",
+                        targets: {nodejs: "current"},
                     },
                 ],
             ],
