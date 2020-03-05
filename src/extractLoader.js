@@ -101,12 +101,12 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
             babelrc: false,
             presets: [
                 [
-                    "env", {
+                    require("babel-preset-env"), {
                         modules: "commonjs",
                     },
                 ],
             ],
-            plugins: ["add-module-exports"],
+            plugins: [require("babel-plugin-add-module-exports")],
         }).code;
 
         const script = new vm.Script(src, {
