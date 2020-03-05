@@ -1,3 +1,15 @@
+# [5.0.0](https://github.com/peerigon/extract-loader/compare/v4.0.3...v5.0.0) (2020-03-05)
+
+
+### Features
+
+* Add support for ECMAScript modules ([#69](https://github.com/peerigon/extract-loader/issues/69)) ([6034f23](https://github.com/peerigon/extract-loader/commit/6034f23))
+
+
+### BREAKING CHANGES
+
+* The extract-loader now uses Babel to transpile the bundle code for the current Node version. This is required in order to support the new file-loader which produces ECMAScript modules. This *should not* be a breaking change but since Babel is also known to be kind of brittle in regards of configuration we cannot guarantee that there might be unknown/unwanted side-effects in your project setup.
+
 ## [4.0.3](https://github.com/peerigon/extract-loader/compare/v4.0.2...v4.0.3) (2020-01-29)
 
 
