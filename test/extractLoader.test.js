@@ -200,7 +200,7 @@ describe("extractLoader", () => {
                 throw new Error("Did not throw expected error");
             },
             message => {
-                expect(message).to.match(/SyntaxError: Unexpected identifier/);
+                expect(message).to.match(/SyntaxError: unknown: Unexpected token/);
             }
         ));
     it("should report resolve errors", () =>
