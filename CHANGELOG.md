@@ -1,3 +1,10 @@
+## [5.0.1](https://github.com/peerigon/extract-loader/compare/v5.0.0...v5.0.1) (2020-03-06)
+
+
+### Bug Fixes
+
+* Add missing Babel dependency ([#76](https://github.com/peerigon/extract-loader/issues/76)) ([72ff48d](https://github.com/peerigon/extract-loader/commit/72ff48d))
+
 # [5.0.0](https://github.com/peerigon/extract-loader/compare/v4.0.3...v5.0.0) (2020-03-05)
 
 
