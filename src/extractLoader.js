@@ -127,7 +127,7 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
                 const indexOfLastExclMark = relativePathWithoutQuery.lastIndexOf("!");
                 const loaders = givenRelativePath.slice(0, indexOfLastExclMark + 1);
                 const relativePath = relativePathWithoutQuery.slice(indexOfLastExclMark + 1);
-                const absolutePath = resolve.sync(relativePath, {
+                const absolutePath = tryResolve(relativePath, {
                     basedir: path.dirname(filename),
                 });
                 const ext = path.extname(absolutePath);
@@ -138,7 +138,7 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
 
                 // If the required file is a js file, we just require it with node's require.
                 // If the required file should be processed by a loader we do not touch it (even if it is a .js file).
-                if (loaders === "" && ext === ".js") {
+                if (loaders === "" && absolutePath.indexOf("node_modules/") !== -1 && ext === ".js") {
                     // Mark the file as dependency so webpack's watcher is working for the css-loader helper.
                     // Other dependencies are automatically added by loadModule() below
                     loaderContext.addDependency(absolutePath);
@@ -220,6 +220,14 @@ function getPublicPath(options, context) {
     return "";
 }
 /* eslint-enable complexity */
+
+function tryResolve(filename, options) {
+    try {
+        return resolve.sync(filename, options);
+    } catch (e) { // Return original.
+        return filename;
+    }
+}
 
 // For CommonJS interoperability
 module.exports = extractLoader;
