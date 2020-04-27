@@ -94,9 +94,6 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
     }
 
     async function evalModule(src, filename) {
-        const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
-        const rndPlaceholderPattern = new RegExp(rndPlaceholder, "g");
-
         src = babel.transform(src, {
             babelrc: false,
             presets: [
@@ -150,9 +147,12 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
                     return exports;
                 }
 
+                const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
+
                 newDependencies.push({
                     absolutePath,
                     absoluteRequest: loaders + absolutePath + query,
+                    rndPlaceholderPattern: new RegExp(rndPlaceholder, "g"),
                 });
 
                 return rndPlaceholder;
@@ -162,16 +162,19 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
         script.runInNewContext(sandbox);
 
         const extractedDependencyContent = await Promise.all(
-            newDependencies.map(async ({absolutePath, absoluteRequest}) => {
+            newDependencies.map(async ({absolutePath, absoluteRequest, rndPlaceholderPattern}) => {
                 const src = await loadModule(absoluteRequest);
 
-                return evalModule(src, absolutePath);
+                return {
+                    content: await evalModule(src, absolutePath),
+                    rndPlaceholderPattern,
+                };
             })
         );
         const contentWithPlaceholders = extractExports(sandbox.module.exports);
-        const extractedContent = contentWithPlaceholders.replace(
-            rndPlaceholderPattern,
-            () => extractedDependencyContent.shift()
+        const extractedContent = extractedDependencyContent.reduce(
+            (content, dependency) => content.replace(dependency.rndPlaceholderPattern, dependency.content),
+            contentWithPlaceholders
         );
 
         moduleCache.set(filename, extractedContent);
