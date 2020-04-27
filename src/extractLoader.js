@@ -152,7 +152,7 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
                 newDependencies.push({
                     absolutePath,
                     absoluteRequest: loaders + absolutePath + query,
-                    rndPlaceholderPattern: new RegExp(rndPlaceholder, "g"),
+                    rndPlaceholder,
                 });
 
                 return rndPlaceholder;
@@ -162,20 +162,18 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
         script.runInNewContext(sandbox);
 
         const extractedDependencyContent = await Promise.all(
-            newDependencies.map(async ({absolutePath, absoluteRequest, rndPlaceholderPattern}) => {
+            newDependencies.map(async ({absolutePath, absoluteRequest}) => {
                 const src = await loadModule(absoluteRequest);
 
-                return {
-                    content: await evalModule(src, absolutePath),
-                    rndPlaceholderPattern,
-                };
+                return evalModule(src, absolutePath);
             })
         );
         const contentWithPlaceholders = extractExports(sandbox.module.exports);
-        const extractedContent = extractedDependencyContent.reduce(
-            (content, dependency) => content.replace(dependency.rndPlaceholderPattern, dependency.content),
-            contentWithPlaceholders
-        );
+        const extractedContent = extractedDependencyContent.reduce((content, dependencyContent, idx) => {
+            const pattern = new RegExp(newDependencies[idx].rndPlaceholder, "g");
+
+            return content.replace(pattern, dependencyContent);
+        }, contentWithPlaceholders);
 
         moduleCache.set(filename, extractedContent);
 
