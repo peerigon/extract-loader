@@ -1,58 +1,16 @@
-## [5.0.1](https://github.com/peerigon/extract-loader/compare/v5.0.0...v5.0.1) (2020-03-06)
+# Change Log
 
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### Bug Fixes
-
-* Add missing Babel dependency ([#76](https://github.com/peerigon/extract-loader/issues/76)) ([72ff48d](https://github.com/peerigon/extract-loader/commit/72ff48d))
-
-# [5.0.0](https://github.com/peerigon/extract-loader/compare/v4.0.3...v5.0.0) (2020-03-05)
+<a name="3.2.0"></a>
+# [3.2.0](https://github.com/peerigon/extract-loader/compare/v5.0.1...v3.2.0) (2020-05-26)
 
 
 ### Features
 
-* Add support for ECMAScript modules ([#69](https://github.com/peerigon/extract-loader/issues/69)) ([6034f23](https://github.com/peerigon/extract-loader/commit/6034f23))
+* unique placeholders for each match ([#83](https://github.com/peerigon/extract-loader/issues/83)) ([5e61f0c](https://github.com/peerigon/extract-loader/commit/5e61f0c))
 
 
-### BREAKING CHANGES
-
-* The extract-loader now uses Babel to transpile the bundle code for the current Node version. This is required in order to support the new file-loader which produces ECMAScript modules. This *should not* be a breaking change but since Babel is also known to be kind of brittle in regards of configuration we cannot guarantee that there might be unknown/unwanted side-effects in your project setup.
-
-## [4.0.3](https://github.com/peerigon/extract-loader/compare/v4.0.2...v4.0.3) (2020-01-29)
-
-
-### Bug Fixes
-
-* explicit build before release since prePublishOnly does not run ([83299e9](https://github.com/peerigon/extract-loader/commit/83299e9))
-
-## [4.0.2](https://github.com/peerigon/extract-loader/compare/v4.0.1...v4.0.2) (2020-01-29)
-
-
-### Bug Fixes
-
-* adjust release action to fix build step ([9216425](https://github.com/peerigon/extract-loader/commit/9216425))
-
-## [4.0.1](https://github.com/peerigon/extract-loader/compare/v4.0.0...v4.0.1) (2020-01-28)
-
-
-### Bug Fixes
-
-* handling resource paths with query parameters ([b4b2c0a](https://github.com/peerigon/extract-loader/commit/b4b2c0a))
-
-# [4.0.0](https://github.com/peerigon/extract-loader/compare/v3.1.0...v4.0.0) (2020-01-27)
-
-
-### chore
-
-* remove node v6 support ([3938c75](https://github.com/peerigon/extract-loader/commit/3938c75))
-
-
-### BREAKING CHANGES
-
-* remove node v6 support
-
-# Change Log
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 <a name="3.1.0"></a>
 # [3.1.0](https://github.com/peerigon/extract-loader/compare/v3.0.0...v3.1.0) (2018-11-26)
