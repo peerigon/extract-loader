@@ -209,7 +209,7 @@ describe("extractLoader", () => {
                 throw new Error("Did not throw expected error");
             },
             message => {
-                expect(message).to.match(/Error: Cannot find module '\.\/does-not-exist\.jpg'/);
+                expect(message).to.match(/Error: Can't resolve '\.\/does-not-exist\.jpg'/);
             }
         ));
     it("should report resolve loader errors", () =>
