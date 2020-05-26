@@ -94,9 +94,6 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
     }
 
     async function evalModule(src, filename) {
-        const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
-        const rndPlaceholderPattern = new RegExp(rndPlaceholder, "g");
-
         src = babel.transform(src, {
             babelrc: false,
             presets: [
@@ -150,9 +147,12 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
                     return exports;
                 }
 
+                const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
+
                 newDependencies.push({
                     absolutePath,
                     absoluteRequest: loaders + absolutePath + query,
+                    rndPlaceholder,
                 });
 
                 return rndPlaceholder;
@@ -169,10 +169,11 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
             })
         );
         const contentWithPlaceholders = extractExports(sandbox.module.exports);
-        const extractedContent = contentWithPlaceholders.replace(
-            rndPlaceholderPattern,
-            () => extractedDependencyContent.shift()
-        );
+        const extractedContent = extractedDependencyContent.reduce((content, dependencyContent, idx) => {
+            const pattern = new RegExp(newDependencies[idx].rndPlaceholder, "g");
+
+            return content.replace(pattern, dependencyContent);
+        }, contentWithPlaceholders);
 
         moduleCache.set(filename, extractedContent);
 
