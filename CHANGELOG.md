@@ -1,3 +1,10 @@
+# [5.1.0](https://github.com/peerigon/extract-loader/compare/v5.0.1...v5.1.0) (2020-05-26)
+
+
+### Features
+
+* unique placeholders for each match ([#83](https://github.com/peerigon/extract-loader/issues/83)) ([5e61f0c](https://github.com/peerigon/extract-loader/commit/5e61f0c345763d18d3f1be3622cabc86dac8077d))
+
 # Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
