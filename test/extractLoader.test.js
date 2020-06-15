@@ -82,6 +82,28 @@ describe("extractLoader", () => {
                 /<img src="hi-dist\.jpg">/
             );
         }));
+    it("should extract the script.html as file, emit the referenced script and rewrite the url", () =>
+        compile({testModule: "script.html"}).then(() => {
+            const scriptHtml = path.resolve(__dirname, "dist/script-dist.html");
+            const scriptJs = path.resolve(__dirname, "dist/simple-dist.js");
+
+            expect(scriptHtml).to.be.a.file();
+            expect(scriptJs).to.be.a.file();
+            expect(scriptHtml).to.have.content.that.match(
+                /<script src="simple-dist\.js">/
+            );
+        }));
+    it("should extract the esm.html as file, emit the referenced es module and rewrite the url", () =>
+        compile({testModule: "esm.html"}).then(() => {
+            const esmHtml = path.resolve(__dirname, "dist/esm-dist.html");
+            const esmJs = path.resolve(__dirname, "dist/esm-dist.js");
+
+            expect(esmHtml).to.be.a.file();
+            expect(esmJs).to.be.a.file();
+            expect(esmHtml).to.have.content.that.match(
+                /<script src="esm-dist\.js">/
+            );
+        }));
     it("should extract the img.css as file, emit the referenced img and rewrite the url", () =>
         compile({testModule: "img.css"}).then(() => {
             const imgCss = path.resolve(__dirname, "dist/img-dist.css");
