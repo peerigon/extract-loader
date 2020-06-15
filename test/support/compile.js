@@ -53,7 +53,7 @@ function compile({testModule, publicPath, loaderOptions}) {
                                 {
                                     loader: "html-loader",
                                     options: {
-                                        attrs: ["img:src", "link:href"],
+                                        attrs: ["img:src", "link:href", "script:src"],
                                         interpolate: true,
                                     },
                                 },
