@@ -46,7 +46,7 @@
     "mocha": "^5.2.0",
     "nyc": "^13.0.1",
     "rimraf": "^2.6.2",
-    "standard-version": "^4.4.0",
+    "standard-version": "^8.0.1",
     "style-loader": "^0.23.0",
     "webpack": "^4.17.1",
     "webpack-command": "^0.4.1"
