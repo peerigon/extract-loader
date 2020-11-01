@@ -107,6 +107,7 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
             plugins: [require("babel-plugin-add-module-exports")],
         }).code;
 
+        const curVmDepth = global.__EXTRACT_LOADER_PLACEHOLDER__DEPTH__ || 0;
         const script = new vm.Script(src, {
             filename,
             displayErrors: true,
@@ -147,16 +148,17 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
                     return exports;
                 }
 
-                const rndPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + rndNumber() + rndNumber();
+                const extractPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + curVmDepth + "__" + counterNumber() + "__";
 
                 newDependencies.push({
                     absolutePath,
                     absoluteRequest: loaders + absolutePath + query,
-                    rndPlaceholder,
+                    extractPlaceholder,
                 });
 
-                return rndPlaceholder;
+                return extractPlaceholder;
             },
+            __EXTRACT_LOADER_PLACEHOLDER__DEPTH__: curVmDepth + 1,
         });
 
         script.runInNewContext(sandbox);
@@ -170,7 +172,7 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
         );
         const contentWithPlaceholders = extractExports(sandbox.module.exports);
         const extractedContent = extractedDependencyContent.reduce((content, dependencyContent, idx) => {
-            const pattern = new RegExp(newDependencies[idx].rndPlaceholder, "g");
+            const pattern = new RegExp(newDependencies[idx].extractPlaceholder, "g");
 
             return content.replace(pattern, dependencyContent);
         }, contentWithPlaceholders);
@@ -183,13 +185,13 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
     return evalModule(src, filename);
 }
 
+let counter = 0;
+
 /**
  * @returns {string}
  */
-function rndNumber() {
-    return Math.random()
-        .toString()
-        .slice(2);
+function counterNumber() {
+    return (counter++).toString(10);
 }
 
 // getPublicPath() encapsulates the complexity of reading the publicPath from the current
