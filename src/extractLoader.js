@@ -107,6 +107,7 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
             plugins: [require("babel-plugin-add-module-exports")],
         }).code;
 
+        const curVmDepth = global.__EXTRACT_LOADER_PLACEHOLDER__DEPTH__ || 0;
         const script = new vm.Script(src, {
             filename,
             displayErrors: true,
@@ -147,7 +148,7 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
                     return exports;
                 }
 
-                const extractPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + counterNumber() + "__";
+                const extractPlaceholder = "__EXTRACT_LOADER_PLACEHOLDER__" + curVmDepth + "__" + counterNumber() + "__";
 
                 newDependencies.push({
                     absolutePath,
@@ -157,6 +158,7 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
 
                 return extractPlaceholder;
             },
+            __EXTRACT_LOADER_PLACEHOLDER__DEPTH__: curVmDepth + 1,
         });
 
         script.runInNewContext(sandbox);
