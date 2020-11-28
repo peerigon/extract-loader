@@ -135,7 +135,7 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
 
                 // If the required file is a js file, we just require it with node's require.
                 // If the required file should be processed by a loader we do not touch it (even if it is a .js file).
-                if (loaders === "" && ext === ".js") {
+                if (loaders === "" && ext === ".js" && givenRelativePath.includes('node_modules')) {
                     // Mark the file as dependency so webpack's watcher is working for the css-loader helper.
                     // Other dependencies are automatically added by loadModule() below
                     loaderContext.addDependency(absolutePath);
