@@ -133,10 +133,8 @@ describe("extractLoader", () => {
                 dependency => dependency.slice(basePath.length)
             );
 
-            expect(dependencies.sort()).to.eql(
+            expect(dependencies.sort()).to.include.members(
                 [
-                    "/node_modules/css-loader/lib/css-base.js",
-                    "/node_modules/css-loader/lib/url/escape.js",
                     "/test/modules/hi.jpg",
                     "/test/modules/img.css",
                     "/test/modules/stylesheet.html",
@@ -221,15 +219,18 @@ describe("extractLoader", () => {
                 expect(message).to.match(/Error: Can't resolve 'does-not-exist'/);
             }
         ));
-    it("should not leak globals when there is an error during toString()", () =>
-        compile({testModule: "error-to-string.js"}).then(
+    it("should not leak globals when there is an error during toString()", () => {
+        delete global.btoa;
+
+        return compile({testModule: "error-to-string.js"}).then(
             () => {
                 throw new Error("Did not throw expected error");
             },
             () => {
                 expect("btoa" in global).to.be.false;
             }
-        ));
+        );
+    });
     it("should restore the original globals when there is an error during toString()", () => {
         const myBtoa = {};
 
