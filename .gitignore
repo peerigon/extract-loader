@@ -39,3 +39,6 @@ node_modules
 
 # NYC covergae information
 .nyc_output
+
+# WebStorm/IntelliJ Project Files
+*.iml

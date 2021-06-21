@@ -61,7 +61,7 @@ function compile({testModule, publicPath, loaderOptions}) {
                         },
                         {
                             test: /\.css$/,
-                            loaders: [
+                            use: [
                                 {
                                     loader: "file-loader",
                                     options: {
@@ -82,7 +82,7 @@ function compile({testModule, publicPath, loaderOptions}) {
                         },
                         {
                             test: /\.jpg$/,
-                            loaders: [
+                            use: [
                                 {
                                     loader: "file-loader",
                                     options: {
