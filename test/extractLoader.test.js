@@ -200,7 +200,7 @@ describe("extractLoader", () => {
                 throw new Error("Did not throw expected error");
             },
             message => {
-                expect(message).to.match(/SyntaxError: unknown: Unexpected token/);
+                expect(message).to.match(/SyntaxError: unknown: Missing semicolon/);
             }
         ));
     it("should report resolve errors", () =>
@@ -221,15 +221,18 @@ describe("extractLoader", () => {
                 expect(message).to.match(/Error: Can't resolve 'does-not-exist'/);
             }
         ));
-    it("should not leak globals when there is an error during toString()", () =>
-        compile({testModule: "error-to-string.js"}).then(
+    it("should not leak globals when there is an error during toString()", () => {
+        delete global.btoa;
+
+        return compile({testModule: "error-to-string.js"}).then(
             () => {
                 throw new Error("Did not throw expected error");
             },
             () => {
                 expect("btoa" in global).to.be.false;
             }
-        ));
+        );
+    });
     it("should restore the original globals when there is an error during toString()", () => {
         const myBtoa = {};
 
