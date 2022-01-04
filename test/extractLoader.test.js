@@ -19,7 +19,14 @@ describe("extractLoader", () => {
             const simpleJs = path.resolve(__dirname, "dist/simple-dist.js");
 
             expect(simpleJs).to.be.a.file();
-            expect(simpleJs).to.have.content("hello");
+            expect(simpleJs).to.have.content("hello$'");
+        }));
+    it("should extract require with dollar sign correctly", () =>
+        compile({testModule: "require-dollar-sign.js"}).then(() => {
+            const simpleJs = path.resolve(__dirname, "dist/require-dollar-sign-dist.js");
+
+            expect(simpleJs).to.be.a.file();
+            expect(simpleJs).to.have.content("first hello$' last");
         }));
     it("should extract resource with query params into simple-css-with-query-param.js", () =>
         compile({testModule: "simple-css-with-query-params.js"}).then(() => {

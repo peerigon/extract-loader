@@ -172,7 +172,9 @@ function evalDependencyGraph({loaderContext, src, filename, publicPath = ""}) {
         const extractedContent = extractedDependencyContent.reduce((content, dependencyContent, idx) => {
             const pattern = new RegExp(newDependencies[idx].rndPlaceholder, "g");
 
-            return content.replace(pattern, dependencyContent);
+            // should be callback because dep text could contain $'
+            // https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/replace
+            return content.replace(pattern, () => dependencyContent);
         }, contentWithPlaceholders);
 
         moduleCache.set(filename, extractedContent);
