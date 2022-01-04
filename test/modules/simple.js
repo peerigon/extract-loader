@@ -1,2 +1,2 @@
 /* eslint-disable import/unambiguous */
-module.exports = "hello";
+module.exports = "hello$'";
