@@ -8,7 +8,7 @@
     "test": "cross-env NODE_ENV=test nyc mocha -R spec",
     "posttest": "eslint src test",
     "release": "standard-version",
-    "prepublishOnly": "npm run build"
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
