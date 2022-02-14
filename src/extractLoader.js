@@ -206,19 +206,17 @@ function rndNumber() {
  * @returns {string}
  */
 function getPublicPath(options, context) {
+    let publicPath = "";
+
     if ("publicPath" in options) {
-        return typeof options.publicPath === "function" ? options.publicPath(context) : options.publicPath;
+        publicPath = typeof options.publicPath === "function" ? options.publicPath(context) : options.publicPath;
+    } else if (context.options && context.options.output && "publicPath" in context.options.output) {
+        publicPath = context.options.output.publicPath;
+    } else if (context._compilation && context._compilation.outputOptions && "publicPath" in context._compilation.outputOptions) {
+        publicPath = context._compilation.outputOptions.publicPath;
     }
 
-    if (context.options && context.options.output && "publicPath" in context.options.output) {
-        return context.options.output.publicPath;
-    }
-
-    if (context._compilation && context._compilation.outputOptions && "publicPath" in context._compilation.outputOptions) {
-        return context._compilation.outputOptions.publicPath;
-    }
-
-    return "";
+    return publicPath === "auto" ? "" : publicPath;
 }
 /* eslint-enable complexity */
 
