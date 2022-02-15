@@ -31,7 +31,10 @@
     "node": ">= 6.0.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/cli": "^7.14.5",
+
+    "@babel/plugin-transform-runtime": "^7.14.5",
+    "@babel/register": "^7.14.5",
     "chai": "^4.1.0",
     "chai-fs": "^2.0.0",
     "cross-env": "7",
@@ -50,14 +53,15 @@
     "webpack-command": "0.5"
   },
   "dependencies": {
-    "@babel/cli": "^7.17.0",
-    "@babel/core": "^7.17.2",
-    "@babel/preset-env": "^7.16.11",
-    "@babel/register": "^7.17.0",
-    "@babel/runtime": "^7.17.2",
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.5",
+    "@babel/runtime": "^7.14.6",
+    "babel-plugin-add-module-exports": "^1.0.4",
+    
     "@istanbuljs/nyc-config-babel": "^3.0.0",
     "babel-plugin-istanbul": "^6.1.1",
     "btoa": "^1.2.1",
+    "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb": "^19.0.4",
     "loader-utils": "3",
     "resolve": "^1.8.1"
