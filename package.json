@@ -38,6 +38,7 @@
     "css-loader": "^6.6.0",
     "eslint": "^8.9.0",
     "eslint-config-peerigon": "33",
+    "eslint-config-prettier": "^8.3.0",
     "file-loader": "6",
     "html-loader": "3",
     "mocha": "9",
@@ -55,7 +56,9 @@
     "@babel/register": "^7.17.0",
     "@babel/runtime": "^7.17.2",
     "@istanbuljs/nyc-config-babel": "^3.0.0",
+    "babel-plugin-istanbul": "^6.1.1",
     "btoa": "^1.2.1",
+    "eslint-config-airbnb": "^19.0.4",
     "loader-utils": "3",
     "resolve": "^1.8.1"
   },
