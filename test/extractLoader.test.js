@@ -14,20 +14,22 @@ describe("extractLoader", () => {
     beforeEach(() => {
         rimRaf.sync(path.resolve(__dirname, "dist"));
     });
-    it("should extract 'hello' into simple.js", () =>
+    it("should extract 'hello' into simple.js", (done) =>
         compile({testModule: "simple.js"}).then(() => {
             const simpleJs = path.resolve(__dirname, "dist/simple-dist.js");
+            console.log(simpleJs);
 
             expect(simpleJs).to.be.a.file();
             expect(simpleJs).to.have.content("hello");
-        }));
-    it("should extract resource with query params into simple-css-with-query-param.js", () =>
-        compile({testModule: "simple-css-with-query-params.js"}).then(() => {
+        }).then(done,done));
+    it("should extract resource with query params into simple-css-with-query-param.js", async (done) =>{
+        await compile({testModule: "simple-css-with-query-params.js"});
             const simpleJs = path.resolve(__dirname, "dist/simple-css-with-query-params-dist.js");
 
             expect(simpleJs).to.be.a.file();
             expect(simpleJs).to.have.content("simple-dist.css");
-        }));
+            done();
+});
     it("should extract resource with query params and loader into simple-css-with-query-param-and-loader.js", () =>
         compile({testModule: "simple-css-with-query-params-and-loader.js"}).then(() => {
             const simpleJs = path.resolve(__dirname, "dist/simple-css-with-query-params-and-loader-dist.js");

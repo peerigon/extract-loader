@@ -1,6 +1,6 @@
 {
     "extends": [
-        "peerigon/tests"
+        "airbnb"
     ],
     "env": {
         "node": true,
