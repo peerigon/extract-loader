@@ -8,6 +8,27 @@ extract-loader
 [![Build Status](https://travis-ci.org/peerigon/extract-loader.svg?branch=master)](https://travis-ci.org/peerigon/extract-loader)
 [![Coverage Status](https://img.shields.io/coveralls/peerigon/extract-loader.svg)](https://coveralls.io/r/peerigon/extract-loader?branch=master)
 
+# LEADING REACH EXTRACT-LOADER
+
+- updated dependencies
+- upgraded to babel7
+- upgraded to wp5 compatibility -- note you must esModule: false on html-loader, file-loader, and css-loader or you will get problems
+- jest over mocha (was breaking with babel 6 gone)
+- audit fixes
+- eslint updated to an actual rule set and linter fixed
+- had to make everything commonjs
+
+we need to maintain this until we are done with angular templates as separate files.
+
+
+## alternatives
+- move off angular
+- not extract to html (use strings for templates)
+
+
+# original readme
+
+
 The extract-loader evaluates the given source code on the fly and returns the result as string. Its main use-case is to resolve urls within HTML and CSS coming from their respective loaders. Use the [file-loader](https://github.com/webpack/file-loader) to emit the extract-loader's result as separate file.
 
 ```javascript

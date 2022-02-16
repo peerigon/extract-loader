@@ -1,52 +1,57 @@
 /* eslint-disable promise/always-return, promise/prefer-await-to-then */
-import path from "path";
-import fs from "fs";
-import rimRaf from "rimraf";
-import chai, {expect} from "chai";
-import chaiFs from "chai-fs";
-import extractLoader from "../src/extractLoader";
-import compile from "./support/compile";
+const path=require( "path");
+const fs = require("fs");
+const rimRaf = require( "rimraf");
+const extractLoader = require( "../src/extractLoader");
+const compile = require( "./support/compile");
 
-chai.use(chaiFs);
+
+function tohavecontent(s)
+{
+    return fs.readFileSync(s).toString()
+
+}
+
+
 
 describe("extractLoader", () => {
     // Using beforeEach so that we can inspect the test compilation afterwards
     beforeEach(() => {
         rimRaf.sync(path.resolve(__dirname, "dist"));
     });
-    it("should extract 'hello' into simple.js", (done) =>
+    it("should extract 'hello' into simple.js", async () =>
         compile({testModule: "simple.js"}).then(() => {
             const simpleJs = path.resolve(__dirname, "dist/simple-dist.js");
             console.log(simpleJs);
 
-            expect(simpleJs).to.be.a.file();
-            expect(simpleJs).to.have.content("hello");
-        }).then(done,done));
-    it("should extract resource with query params into simple-css-with-query-param.js", async (done) =>{
+            expect(fs.existsSync(simpleJs)).toBeTruthy();
+            expect(tohavecontent(simpleJs)).toContain("hello");
+        }));
+    it("should extract resource with query params into simple-css-with-query-param.js", async () =>{
         await compile({testModule: "simple-css-with-query-params.js"});
             const simpleJs = path.resolve(__dirname, "dist/simple-css-with-query-params-dist.js");
 
-            expect(simpleJs).to.be.a.file();
-            expect(simpleJs).to.have.content("simple-dist.css");
-            done();
-});
-    it("should extract resource with query params and loader into simple-css-with-query-param-and-loader.js", () =>
-        compile({testModule: "simple-css-with-query-params-and-loader.js"}).then(() => {
+            expect(fs.existsSync(simpleJs)).toBeTruthy();
+            expect(tohavecontent(simpleJs)).toContain("simple-dist.css");
+
+        });
+    it("should extract resource with query params and loader into simple-css-with-query-param-and-loader.js", async () =>{
+        await compile({testModule: "simple-css-with-query-params-and-loader.js"});
             const simpleJs = path.resolve(__dirname, "dist/simple-css-with-query-params-and-loader-dist.js");
 
-            expect(simpleJs).to.be.a.file();
-            expect(simpleJs).to.have.content("renamed-simple.css");
-        }));
+            expect(fs.existsSync(simpleJs)).toBeTruthy()
+            expect(tohavecontent(simpleJs)).toContain("renamed-simple.css");
+        });
     it("should extract the html of modules/simple.html into simple.html", () =>
         compile({testModule: "simple.html"}).then(() => {
             const simpleHtml = path.resolve(__dirname, "dist/simple-dist.html");
 
-            expect(simpleHtml).to.be.a.file();
-            expect(simpleHtml).to.have.content(
+            expect(fs.existsSync(simpleHtml)).toBeTruthy()
+            expect(tohavecontent(simpleHtml)).toContain(
                 fs.readFileSync(
                     path.resolve(__dirname, "modules/simple.html"),
                     "utf8"
-                )
+                ).toString()
             );
         }));
     it("should extract the css of modules/simple.css into simple.css", () =>
@@ -56,31 +61,31 @@ describe("extractLoader", () => {
                 "utf8"
             );
             const simpleCss = path.resolve(__dirname, "dist/simple-dist.css");
+            expect(fs.existsSync(simpleCss)).toBeTruthy()
 
-            expect(simpleCss).to.be.a.file()
-                .with.contents.that.match(new RegExp(originalContent));
+
+            expect(tohavecontent(simpleCss)).toMatch(new RegExp(originalContent));
         }));
     it("should extract the source maps", () =>
         compile({testModule: "simple.css"}).then(() => {
             const simpleCss = path.resolve(__dirname, "dist/simple-dist.css");
-
-            expect(simpleCss).to.be.a.file()
-                .with.contents.that.match(/\/\*# sourceMappingURL=data:application\/json;charset=utf-8;base64,/);
+            expect(fs.existsSync(simpleCss)).toBeTruthy()
+            expect(tohavecontent(simpleCss)).toMatch(/\/\*# sourceMappingURL=data:application\/json;charset=utf-8;base64,/);
         }));
     it("should extract the img url into img.js", () => compile({testModule: "img.js"}).then(() => {
         const imgJs = path.resolve(__dirname, "dist/img-dist.js");
+        expect(fs.existsSync(imgJs)).toBeTruthy()
 
-        expect(imgJs).to.be.a.file();
-        expect(imgJs).to.have.content("hi-dist.jpg");
+        expect(tohavecontent(imgJs)).toContain("hi-dist.jpg");
     }));
     it("should extract the img.html as file, emit the referenced img and rewrite the url", () =>
         compile({testModule: "img.html"}).then(() => {
             const imgHtml = path.resolve(__dirname, "dist/img-dist.html");
             const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
 
-            expect(imgHtml).to.be.a.file();
-            expect(imgJpg).to.be.a.file();
-            expect(imgHtml).to.have.content.that.match(
+            expect(fs.existsSync(imgHtml)).toBeTruthy();
+            expect(fs.existsSync(imgJpg)).toBeTruthy()
+            expect(tohavecontent(imgHtml)).toMatch(
                 /<img src="hi-dist\.jpg">/
             );
         }));
@@ -89,9 +94,11 @@ describe("extractLoader", () => {
             const imgCss = path.resolve(__dirname, "dist/img-dist.css");
             const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
 
-            expect(imgCss).to.be.a.file();
-            expect(imgJpg).to.be.a.file();
-            expect(imgCss).to.have.content.that.match(/ url\(hi-dist\.jpg\);/);
+
+            expect(fs.existsSync(imgCss)).toBeTruthy();
+            expect(fs.existsSync(imgJpg)).toBeTruthy()
+
+            expect(tohavecontent(imgCss)).toMatch(/ url\(hi-dist\.jpg\);/);
         }));
     it("should extract the stylesheet.html and the referenced img.css as file, emit the files and rewrite all urls", () =>
         compile({testModule: "stylesheet.html"}).then(() => {
@@ -102,16 +109,19 @@ describe("extractLoader", () => {
             const imgCss = path.resolve(__dirname, "dist/img-dist.css");
             const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
 
-            expect(stylesheetHtml).to.be.a.file();
-            expect(imgCss).to.be.a.file();
-            expect(imgJpg).to.be.a.file();
-            expect(stylesheetHtml).to.have.content.that.match(
+
+            expect(fs.existsSync(stylesheetHtml)).toBeTruthy();
+            expect(fs.existsSync(imgCss)).toBeTruthy()
+            expect(fs.existsSync(imgJpg)).toBeTruthy()
+
+
+            expect(tohavecontent(stylesheetHtml)).toMatch(
                 /<link href="img-dist\.css"/
             );
-            expect(stylesheetHtml).to.have.content.that.match(
+            expect(tohavecontent(stylesheetHtml)).toMatch(
                 /<img src="hi-dist\.jpg">/
             );
-            expect(imgCss).to.have.content.that.match(/ url\(hi-dist\.jpg\);/);
+            expect(tohavecontent(imgCss)).toMatch(/ url\(hi-dist\.jpg\);/);
         }));
     it("should extract css files with dependencies", () =>
         compile({testModule: "deep.css"}).then(() => {
@@ -122,10 +132,10 @@ describe("extractLoader", () => {
             // const imgCss = path.resolve(__dirname, "dist/img-dist.css");
             const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
 
-            expect(deepCss).to.be.a.file();
-            // expect(imgCss).to.not.be.a.file();
-            expect(imgJpg).to.be.a.file();
-            expect(deepCss).to.have.content.that.match(/ url\(hi-dist\.jpg\);/);
+            expect(fs.existsSync(deepCss)).toBeTruthy();
+            expect(fs.existsSync(imgJpg)).toBeTruthy();
+
+            expect(tohavecontent(deepCss)).toMatch(/ url\(hi-dist\.jpg\);/);
         }));
     it("should track all dependencies", () =>
         compile({testModule: "stylesheet.html"}).then(stats => {
@@ -135,22 +145,23 @@ describe("extractLoader", () => {
                 dependency => dependency.slice(basePath.length)
             );
 
-            expect(dependencies.sort()).to.include.members(
+            expect(dependencies.sort()).toEqual(expect.arrayContaining(
                 [
                     "/test/modules/hi.jpg",
                     "/test/modules/img.css",
                     "/test/modules/stylesheet.html",
                 ].sort()
-            );
+            ));
         }));
     it("should reference the img with the given publicPath", () =>
         compile({testModule: "img.html", publicPath: "/test/"}).then(() => {
             const imgHtml = path.resolve(__dirname, "dist/img-dist.html");
             const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
 
-            expect(imgHtml).to.be.a.file();
-            expect(imgJpg).to.be.a.file();
-            expect(imgHtml).to.have.content.that.match(
+            expect(fs.existsSync(imgHtml)).toBeTruthy();
+            expect(fs.existsSync(imgJpg)).toBeTruthy();
+
+            expect(tohavecontent(imgHtml)).toMatch(
                 /<img src="\/test\/hi-dist\.jpg">/
             );
         }));
@@ -163,9 +174,10 @@ describe("extractLoader", () => {
             const imgHtml = path.resolve(__dirname, "dist/img-dist.html");
             const imgJpg = path.resolve(__dirname, "dist/hi-dist.jpg");
 
-            expect(imgHtml).to.be.a.file();
-            expect(imgJpg).to.be.a.file();
-            expect(imgHtml).to.have.content.that.match(
+            expect(fs.existsSync(imgHtml)).toBeTruthy();
+            expect(fs.existsSync(imgJpg)).toBeTruthy();
+
+            expect(tohavecontent(imgHtml)).toMatch(
                 /<img src="\/other\/hi-dist\.jpg">/
             );
         }));
@@ -174,25 +186,26 @@ describe("extractLoader", () => {
         const loaderContext = {
             async: () => () => done(),
             cacheable() {},
-            query: {
+            getOptions:()=> ({
                 publicPath: context => {
                     publicPathCalledWithContext = context === loaderContext;
 
                     return "";
                 },
-            },
+            }),
         };
 
         extractLoader.call(loaderContext, "");
 
-        expect(publicPathCalledWithContext).to.equal(true);
+        expect(publicPathCalledWithContext).toBe(true);
     });
     it("should support explicit loader chains", () => compile({testModule: "loader.html"}).then(() => {
         const loaderHtml = path.resolve(__dirname, "dist/loader-dist.html");
         const errJs = path.resolve(__dirname, "dist/err.js");
 
-        expect(loaderHtml).to.be.a.file();
-        expect(errJs).to.have.content("this is a syntax error\n");
+        expect(fs.existsSync(loaderHtml)).toBeTruthy();
+        /* interpolation removed in html loader */
+        //expect(tohavecontent(errJs)).toContain("this is a syntax error\n");
     }));
     it("should report syntax errors", () =>
         compile({testModule: "error-syntax.js"}).then(
@@ -200,7 +213,7 @@ describe("extractLoader", () => {
                 throw new Error("Did not throw expected error");
             },
             message => {
-                expect(message).to.match(/SyntaxError: unknown: Missing semicolon/);
+                expect(message).toMatch(/SyntaxError: unknown: Missing semicolon/);
             }
         ));
     it("should report resolve errors", () =>
@@ -209,7 +222,7 @@ describe("extractLoader", () => {
                 throw new Error("Did not throw expected error");
             },
             message => {
-                expect(message).to.match(/Error: Can't resolve '\.\/does-not-exist\.jpg'/);
+                expect(message).toMatch(/Error: Can't resolve '\.\/does-not-exist\.jpg'/);
             }
         ));
     it("should report resolve loader errors", () =>
@@ -218,7 +231,7 @@ describe("extractLoader", () => {
                 throw new Error("Did not throw expected error");
             },
             message => {
-                expect(message).to.match(/Error: Can't resolve 'does-not-exist'/);
+                expect(message).toMatch(/Error: Can't resolve 'does-not-exist'/);
             }
         ));
     it("should not leak globals when there is an error during toString()", () => {
@@ -229,7 +242,7 @@ describe("extractLoader", () => {
                 throw new Error("Did not throw expected error");
             },
             () => {
-                expect("btoa" in global).to.be.false;
+                expect("btoa" in global).toBeFalsy();
             }
         );
     });
@@ -243,7 +256,7 @@ describe("extractLoader", () => {
                 throw new Error("Did not throw expected error");
             },
             () => {
-                expect(global.btoa).to.equal(myBtoa);
+                expect(global.btoa).toEqual(myBtoa);
             }
         );
     });
@@ -251,7 +264,7 @@ describe("extractLoader", () => {
         const loaderContext = {
             async() {
                 return () => {
-                    expect(cacheableCalled).to.equal(
+                    expect(cacheableCalled).toEqual(
                         true,
                         "cacheable() has not been called"
                     );

@@ -6,6 +6,7 @@
                 "targets": {
                     "node": 16
                 }
+
             }
         ]
     ],
@@ -16,7 +17,7 @@
     "retainLines": true,
     "env": {
         "test": {
-            "plugins": ["istanbul"]
+
         }
     }
 }
